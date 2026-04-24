@@ -1,0 +1,6 @@
+com.aworld.framework.apilog.config.ApiLogAutoConfiguration
+com.aworld.framework.jackson.config.JacksonAutoConfiguration
+com.aworld.framework.swagger.config.SwaggerAutoConfiguration
+com.aworld.framework.web.config.WebAutoConfiguration
+com.aworld.framework.xss.config.XssAutoConfiguration
+com.aworld.framework.banner.config.BannerAutoConfiguration

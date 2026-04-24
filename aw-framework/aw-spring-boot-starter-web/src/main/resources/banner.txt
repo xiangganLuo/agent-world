@@ -1,0 +1,8 @@
+AWorld https://github.com/xiangganLuo/agent-world/
+Application Version: ${aw.info.version}
+Spring Boot Version: ${spring-boot.version}
+
+ /\  _  _  _ _|_  \    / _  _| _|
+/~~\(_|(/_| | |    \/\/ (_)| |(_|
+     _|
+

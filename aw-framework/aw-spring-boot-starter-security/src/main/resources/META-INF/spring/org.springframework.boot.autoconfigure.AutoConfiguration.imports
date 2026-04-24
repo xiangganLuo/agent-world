@@ -1,0 +1,3 @@
+com.aworld.framework.security.config.SecurityAutoConfiguration
+com.aworld.framework.security.config.WebSecurityConfigurerAdapter
+com.aworld.framework.operatelog.config.OperateLogConfiguration

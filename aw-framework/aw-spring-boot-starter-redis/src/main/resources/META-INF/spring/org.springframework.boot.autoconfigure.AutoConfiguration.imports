@@ -1,0 +1,2 @@
+com.aworld.framework.redis.config.RedisAutoConfiguration
+com.aworld.framework.redis.config.CacheAutoConfiguration

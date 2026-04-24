@@ -1,0 +1,4 @@
+com.aworld.framework.idempotent.config.IdempotentConfiguration
+com.aworld.framework.lock4j.config.Lock4jConfiguration
+com.aworld.framework.ratelimiter.config.RateLimiterConfiguration
+com.aworld.framework.signature.config.ApiSignatureAutoConfiguration

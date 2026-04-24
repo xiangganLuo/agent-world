@@ -1,0 +1,3 @@
+com.aworld.framework.datasource.config.DataSourceAutoConfiguration
+com.aworld.framework.mybatis.config.MybatisAutoConfiguration
+com.aworld.framework.translate.config.TranslateAutoConfiguration

@@ -1,0 +1,2 @@
+com.aworld.framework.quartz.config.QuartzAutoConfiguration
+com.aworld.framework.quartz.config.AsyncAutoConfiguration

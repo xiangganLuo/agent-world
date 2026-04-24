@@ -1,0 +1,3 @@
+com.aworld.framework.mq.redis.config.RedisMQProducerAutoConfiguration
+com.aworld.framework.mq.redis.config.RedisMQConsumerAutoConfiguration
+com.aworld.framework.mq.rabbitmq.config.RabbitMQAutoConfiguration
