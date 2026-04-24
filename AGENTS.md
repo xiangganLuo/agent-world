@@ -11,17 +11,40 @@
 - 📊 **数据统计**: 请求日志记录、聚合统计、引流效果分析
 - 🛠️ **管理后台**: 场所审核、统计面板、Agent 管理
 
+## 项目进度与状态追踪规范 (CRITICAL FOR AGENTS)
+
+所有参与本项目的 AI Agent 必须严格遵守状态追踪规范。项目当前的整体进度、具体的开发任务及所处阶段，统一由以下两个文件管理：
+
+1. **整体进度管理**：`artifacts/projects.md`
+   - 该文件用于维护项目的宏观阶段（P0~P7）和当前所处状态。
+   - 每次跨越一个大阶段时（例如系统设计完成进入任务拆分，或者完成任务拆分进入开发阶段），必须更新该文件中的阶段状态（如将 ⏳ 改为 🟡 或 ✅）。
+2. **具体任务管理**：`artifacts/task-breakdown.md`
+   - 该文件是具体的开发排期与执行清单（包含数十个前后端任务单元）。
+   - **每次完成一个具体的任务单元时，必须同步修改表格中的 `| 状态 |` 列**（将 `⏳` 未开始 更新为 `🟡` 进行中，完成时更新为 `✅` 已完成）。
+
+**工作流要求**：在接手任何开发任务前，Agent 应首先查阅这两个文件以明确当前所处的阶段与待办事项；在每次执行完代码编写、测试通过后，务必在这两个文件中打卡同步你的进度。
+
 ## 文档索引
 
 ### 业务文档 (`artifacts/`)
 业务需求文档位于 `artifacts/` 目录，按业务阶段组织：
 
+#### 需求文档（P0-P2）
 - [项目概览](./artifacts/projects.md) - 项目基本信息与状态追踪
 - [需求说明](./artifacts/requirements.md) - 项目简介、目标与文档索引
 - [需求澄清记录](./artifacts/clarification.md) - 需求讨论与澄清结论
 - [需求清单](./artifacts/requirements-list.md) - 30 项需求分类与优先级（19 个 P0）
 - [业务流程](./artifacts/processes.md) - 6 个核心业务流程（注册、场所、酒馆、引流、统计）
 - [功能需求](./artifacts/functional-requirements.md) - 25 个功能需求详细说明（FR-001 ~ FR-025）
+
+#### 系统设计文档（P3）
+- [系统架构设计](./artifacts/system-architecture.md) - 总体架构、模块划分、关键模块设计（Token 认证、限流、脱敏、异步图片生成等）
+- [数据库设计](./artifacts/database-design.md) - 14 张业务表结构、ER 图、Redis Key 设计
+- [API 接口设计](./artifacts/api-design.md) - 全量 API 清单（Agent API `/agent-api/`、酒馆 API、管理后台 API `/admin-api/`）
+
+#### 任务拆分文档（P4）
+- [任务拆分清单](./artifacts/task-breakdown.md) - 6 个迭代、约 69 个任务单元，含优先级（P0/P1/P2）与开发顺序建议
+
 
 ### 开发规范 (`code-guidelines/`)
 编码规范文档位于 `code-guidelines/` 目录：
