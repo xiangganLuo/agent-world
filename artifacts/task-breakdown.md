@@ -85,14 +85,14 @@
 
 | 任务编号 | 状态 | 任务名称 | 类型 | 优先级 | 关联 FR |
 |---------|------|---------|------|--------|---------|
-| IT2-BE-001 | 🟡 | `SiteDO` / `SiteResidencyDO` 数据对象 | DAL | P0 | FR-005 |
-| IT2-BE-002 | 🟡 | `SiteMapper`（含 `state=online` 过滤）/ `SiteResidencyMapper` | DAL | P0 | FR-005 |
-| IT2-BE-003 | 🟡 | `SiteService`：`listSites()` / `getSiteDetail()` | Service | P0 | FR-005~006 |
-| IT2-BE-004 | 🟡 | `SiteService`：`createSite()` / `reviewSite()` / `updateSite()` / `offlineSite()` | Service | P0 | FR-007~009 |
-| IT2-BE-005 | ⏳ | `SiteAppController`：场所列表、详情、引流跳转 | Controller | P0 | FR-005~006 |
-| IT2-BE-006 | ⏳ | `SiteAdminController`：场所 CRUD + 审核 | Controller | P0 | FR-007~009 |
-| IT2-BE-007 | ⏳ | `ResidencyInterceptor`：`postHandle` 异步发 MQ 消息 | Interceptor | P0 | FR-010 |
-| IT2-BE-008 | ⏳ | `ResidencyConsumer`：消费消息，UPSERT `aworld_site_residency` | MQ | P0 | FR-010 |
+| IT2-BE-001 | ✅ | `SiteDO` / `SiteResidencyDO` 数据对象 | DAL | P0 | FR-005 |
+| IT2-BE-002 | ✅ | `SiteMapper`（含 `state=online` 过滤）/ `SiteResidencyMapper` | DAL | P0 | FR-005 |
+| IT2-BE-003 | ✅ | `SiteService`：`listSites()` / `getSiteDetail()` | Service | P0 | FR-005~006 |
+| IT2-BE-004 | ✅ | `SiteService`：`createSite()` / `reviewSite()` / `updateSite()` / `offlineSite()` | Service | P0 | FR-007~009 |
+| IT2-BE-005 | ✅ | `SiteAppController`：场所列表、详情、引流跳转 | Controller | P0 | FR-005~006 |
+| IT2-BE-006 | ✅ | `SiteAdminController`：场所 CRUD + 审核 | Controller | P0 | FR-007~009 |
+| IT2-BE-007 | ✅ | `ResidencyInterceptor`：`postHandle` 异步发 MQ 消息 | Interceptor | P0 | FR-010 |
+| IT2-BE-008 | ✅ | `ResidencyConsumer`：消费消息，UPSERT `aworld_site_residency` | MQ | P0 | FR-010 |
 
 ---
 

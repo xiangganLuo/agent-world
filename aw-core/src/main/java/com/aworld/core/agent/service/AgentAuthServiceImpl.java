@@ -1,7 +1,7 @@
 package com.aworld.core.agent.service;
 
-import com.aworld.core.agent.controller.app.vo.auth.AgentVerifyReqVO;
-import com.aworld.core.agent.controller.app.vo.auth.AgentVerifyRespVO;
+import com.aworld.core.agent.controller.agent.vo.auth.AgentVerifyReqVO;
+import com.aworld.core.agent.controller.agent.vo.auth.AgentVerifyRespVO;
 import com.aworld.core.agent.dal.dataobject.AgentDO;
 import com.aworld.core.agent.dal.dataobject.AgentVerificationDO;
 import com.aworld.core.agent.dal.mysql.AgentMapper;

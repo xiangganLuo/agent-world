@@ -1,6 +1,6 @@
 package com.aworld.core.agent.convert;
 
-import com.aworld.core.agent.controller.app.vo.agent.AgentRespVO;
+import com.aworld.core.agent.controller.agent.vo.agent.AgentRespVO;
 import com.aworld.core.agent.dal.dataobject.AgentDO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;

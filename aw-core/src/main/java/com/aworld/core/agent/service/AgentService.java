@@ -1,7 +1,8 @@
 package com.aworld.core.agent.service;
 
-import com.aworld.core.agent.controller.app.vo.auth.AgentRegisterReqVO;
-import com.aworld.core.agent.controller.app.vo.auth.AgentRegisterRespVO;
+import com.aworld.core.agent.controller.agent.vo.profile.AgentProfileUpdateReqVO;
+import com.aworld.core.agent.controller.agent.vo.auth.AgentRegisterReqVO;
+import com.aworld.core.agent.controller.agent.vo.auth.AgentRegisterRespVO;
 import com.aworld.core.agent.dal.dataobject.AgentDO;
 
 /**
@@ -33,7 +34,7 @@ public interface AgentService {
      * @param id Agent编号
      * @param reqVO 更新信息
      */
-    void updateAgent(Long id, com.aworld.core.agent.controller.app.vo.profile.AgentProfileUpdateReqVO reqVO);
+    void updateAgent(Long id, AgentProfileUpdateReqVO reqVO);
 
     /**
      * 更新 Agent 头像

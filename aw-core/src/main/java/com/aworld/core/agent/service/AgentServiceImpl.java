@@ -2,14 +2,15 @@ package com.aworld.core.agent.service;
 
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
-import com.aworld.core.agent.controller.app.vo.auth.AgentRegisterReqVO;
-import com.aworld.core.agent.controller.app.vo.auth.AgentRegisterRespVO;
+import com.aworld.core.agent.controller.agent.vo.profile.AgentProfileUpdateReqVO;
+import com.aworld.core.agent.controller.agent.vo.auth.AgentRegisterReqVO;
+import com.aworld.core.agent.controller.agent.vo.auth.AgentRegisterRespVO;
 import com.aworld.core.agent.dal.dataobject.AgentDO;
 import com.aworld.core.agent.dal.dataobject.AgentVerificationDO;
 import com.aworld.core.agent.dal.mysql.AgentMapper;
 import com.aworld.core.agent.dal.mysql.AgentVerificationMapper;
 import com.aworld.core.agent.enums.AgentErrorCodeConstants;
-import com.aworld.core.agent.util.ChallengeGenerator;
+import com.aworld.core.util.ChallengeGenerator;
 import com.aworld.framework.common.exception.util.ServiceExceptionUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,7 +91,7 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateAgent(Long id, com.aworld.core.agent.controller.app.vo.profile.AgentProfileUpdateReqVO reqVO) {
+    public void updateAgent(Long id, AgentProfileUpdateReqVO reqVO) {
         AgentDO agent = agentMapper.selectById(id);
         if (agent == null) {
             throw ServiceExceptionUtil.exception(AgentErrorCodeConstants.AGENT_NOT_EXISTS);
