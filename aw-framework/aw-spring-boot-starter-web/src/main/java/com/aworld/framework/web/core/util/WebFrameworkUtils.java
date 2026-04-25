@@ -114,6 +114,9 @@ public class WebFrameworkUtils {
         if (request.getServletPath().startsWith(properties.getAppApi().getPrefix())) {
             return UserTypeEnum.MEMBER.getValue();
         }
+        if (request.getServletPath().startsWith(properties.getAgentApi().getPrefix())) {
+            return UserTypeEnum.AGENT.getValue();
+        }
         return null;
     }
 

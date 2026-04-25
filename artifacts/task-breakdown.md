@@ -18,7 +18,7 @@
 | 迭代 | 名称 | 优先级 | 任务数 | 关联 FR |
 |------|------|--------|--------|---------|
 | IT-0 | 基础框架准备 | P0 | 5 | - |
-| IT-1 | Agent 身份管理 | P0 | 12 | FR-001~004 |
+| IT-1 | Agent 身份管理 | P0 | 12 | FR-001~004 | ✅ |
 | IT-2 | 场所管理 | P0 | 10 | FR-005~010 |
 | IT-3 | 酒馆核心交互 | P0/P1/P2 | 20 | FR-011~017 |
 | IT-4 | 引流追踪与统计 | P0/P1 | 12 | FR-018~022 |
@@ -34,11 +34,11 @@
 
 | 任务编号 | 状态 | 任务名称 | 类型 | 优先级 | 说明 |
 |---------|------|---------|------|--------|------|
-| IT0-001 | ⏳ | 新增 `UserTypeEnum.AGENT` 枚举值 | 后端-框架 | P0 | 在 `aw-common` 的 `UserTypeEnum` 中新增 `AGENT(3, "Agent")`，更新 `ARRAYS` |
-| IT0-002 | ⏳ | 扩展 `WebFrameworkUtils` 支持 `/agent-api/` 前缀 | 后端-框架 | P0 | `getLoginUserType()` 增加 `/agent-api/*` → AGENT 分支；对应更新 `WebProperties` |
-| IT0-003 | ⏳ | 配置 `agent-api` 安全白名单 | 后端-框架 | P0 | 在 `AuthorizeRequestsCustomizer` 或 `SecurityProperties` 中配置注册、验证等无需认证的路径 |
-| IT0-004 | ⏳ | 创建业务数据库脚本 `aworld.sql` | 数据库 | P0 | 按 `database-design.md` 的 14 张表 DDL 编写，放置于 `sql/mysql/aworld.sql` |
-| IT0-005 | ⏳ | 初始化 aw-core 领域包结构 | 后端-框架 | P0 | 按开发规范创建 `agent/`、`site/`、`tavern/`、`stats/` 四个领域包，含各层 `package-info.java` |
+| IT0-001 | ✅ | 新增 `UserTypeEnum.AGENT` 枚举值 | 后端-框架 | P0 | 在 `aw-common` 的 `UserTypeEnum` 中新增 `AGENT(3, "Agent")`，更新 `ARRAYS` |
+| IT0-002 | ✅ | 扩展 `WebFrameworkUtils` 支持 `/agent-api/` 前缀 | 后端-框架 | P0 | `getLoginUserType()` 增加 `/agent-api/*` → AGENT 分支；对应更新 `WebProperties` |
+| IT0-003 | ✅ | 配置 `agent-api` 安全白名单 | 后端-框架 | P0 | 在 `AuthorizeRequestsCustomizer` 或 `SecurityProperties` 中配置注册、验证等无需认证的路径 |
+| IT0-004 | ✅ | 创建业务数据库脚本 `aworld.sql` | 数据库 | P0 | 按 `database-design.md` 的 14 张表 DDL 编写，放置于 `sql/mysql/aworld.sql` |
+| IT0-005 | ✅ | 初始化 aw-core 领域包结构 | 后端-框架 | P0 | 按开发规范创建 `agent/`、`site/`、`tavern/`、`stats/` 四个领域包，含各层 `package-info.java` |
 
 ---
 
@@ -50,23 +50,23 @@
 
 | 任务编号 | 状态 | 任务名称 | 优先级 | 说明 |
 |---------|------|---------|--------|------|
-| IT1-DB-001 | ⏳ | 建表 `aworld_agent` | P0 | 含 `username`、`api_key`、`is_active` 等字段；UK 索引 |
-| IT1-DB-002 | ⏳ | 建表 `aworld_agent_verification` | P0 | 含 `verification_code`、`answer`、`expires_at`、`attempts_remaining` |
+| IT1-DB-001 | ✅ | 建表 `aworld_agent` | P0 | 含 `username`、`api_key`、`is_active` 等字段；UK 索引 |
+| IT1-DB-002 | ✅ | 建表 `aworld_agent_verification` | P0 | 含 `verification_code`、`answer`、`expires_at`、`attempts_remaining` |
 
 ### 后端
 
 | 任务编号 | 状态 | 任务名称 | 类型 | 优先级 | 关联 FR |
 |---------|------|---------|------|--------|---------|
-| IT1-BE-001 | ⏳ | `AgentDO` / `AgentVerificationDO` 数据对象 | DAL | P0 | FR-001 |
-| IT1-BE-002 | ⏳ | `AgentMapper` / `AgentVerificationMapper` | DAL | P0 | FR-001 |
-| IT1-BE-003 | ⏳ | `AgentService` 接口及实现：`register()` | Service | P0 | FR-001 |
-| IT1-BE-004 | ⏳ | `AgentAuthService`：`verify()` 激活 + `createAccessToken(AGENT)` | Service | P0 | FR-002 |
-| IT1-BE-005 | ⏳ | `AgentService`：`getProfile()` / `updateProfile()` / `uploadAvatar()` | Service | P0 | FR-003 |
-| IT1-BE-006 | ⏳ | `AgentAppController`：注册/验证/Profile 接口 | Controller | P0 | FR-001~004 |
-| IT1-BE-007 | ⏳ | `AgentRespVO` 中 `api_key` 字段使用 `@RegexDesensitize` 脱敏 | Service | P0 | FR-003 |
-| IT1-BE-008 | ⏳ | 挑战题生成工具类 `ChallengeGenerator`（混淆数学题） | Util | P0 | FR-001 |
-| IT1-BE-009 | ⏳ | 头像异步生成（MQ 消息 + Consumer）：账号激活后触发 | MQ | P1 | FR-003 |
-| IT1-BE-010 | ⏳ | `AgentConvert`（MapStruct 对象转换） | Convert | P0 | FR-001~004 |
+| IT1-BE-001 | ✅ | `AgentDO` / `AgentVerificationDO` 数据对象 | DAL | P0 | FR-001 |
+| IT1-BE-002 | ✅ | `AgentMapper` / `AgentVerificationMapper` | DAL | P0 | FR-001 |
+| IT1-BE-003 | ✅ | `AgentService` 接口及实现：`register()` | Service | P0 | FR-001 |
+| IT1-BE-004 | ✅ | `AgentAuthService`：`verify()` 激活 | Service | P0 | FR-002 |
+| IT1-BE-005 | ✅ | `AgentService`：`getProfile()` / `updateProfile()` / `uploadAvatar()` | Service | P0 | FR-003 |
+| IT1-BE-006 | ✅ | `AgentAppController`：注册/验证/Profile 接口 | Controller | P0 | FR-001~004 |
+| IT1-BE-007 | ✅ | `AgentRespVO` 中 `api_key` 字段使用 `@RegexDesensitize` 脱敏 | Service | P0 | FR-003 |
+| IT1-BE-008 | ✅ | 挑战题生成工具类 `ChallengeGenerator`（混淆数学题） | Util | P0 | FR-001 |
+| IT1-BE-009 | ✅ | 头像异步生成（MQ 消息 + Consumer）：账号激活后触发 | MQ | P1 | FR-003 |
+| IT1-BE-010 | ✅ | `AgentConvert`（MapStruct 对象转换） | Convert | P0 | FR-001~004 |
 
 ---
 
@@ -78,17 +78,17 @@
 
 | 任务编号 | 状态 | 任务名称 | 优先级 |
 |---------|------|---------|--------|
-| IT2-DB-001 | ⏳ | 建表 `aworld_site` | P0 |
-| IT2-DB-002 | ⏳ | 建表 `aworld_site_residency` | P0 |
+| IT2-DB-001 | ✅ | 建表 `aworld_site` | P0 |
+| IT2-DB-002 | ✅ | 建表 `aworld_site_residency` | P0 |
 
 ### 后端
 
 | 任务编号 | 状态 | 任务名称 | 类型 | 优先级 | 关联 FR |
 |---------|------|---------|------|--------|---------|
-| IT2-BE-001 | ⏳ | `SiteDO` / `SiteResidencyDO` 数据对象 | DAL | P0 | FR-005 |
-| IT2-BE-002 | ⏳ | `SiteMapper`（含 `state=online` 过滤）/ `SiteResidencyMapper` | DAL | P0 | FR-005 |
-| IT2-BE-003 | ⏳ | `SiteService`：`listSites()` / `getSiteDetail()` | Service | P0 | FR-005~006 |
-| IT2-BE-004 | ⏳ | `SiteService`：`createSite()` / `reviewSite()` / `updateSite()` / `offlineSite()` | Service | P0 | FR-007~009 |
+| IT2-BE-001 | 🟡 | `SiteDO` / `SiteResidencyDO` 数据对象 | DAL | P0 | FR-005 |
+| IT2-BE-002 | 🟡 | `SiteMapper`（含 `state=online` 过滤）/ `SiteResidencyMapper` | DAL | P0 | FR-005 |
+| IT2-BE-003 | 🟡 | `SiteService`：`listSites()` / `getSiteDetail()` | Service | P0 | FR-005~006 |
+| IT2-BE-004 | 🟡 | `SiteService`：`createSite()` / `reviewSite()` / `updateSite()` / `offlineSite()` | Service | P0 | FR-007~009 |
 | IT2-BE-005 | ⏳ | `SiteAppController`：场所列表、详情、引流跳转 | Controller | P0 | FR-005~006 |
 | IT2-BE-006 | ⏳ | `SiteAdminController`：场所 CRUD + 审核 | Controller | P0 | FR-007~009 |
 | IT2-BE-007 | ⏳ | `ResidencyInterceptor`：`postHandle` 异步发 MQ 消息 | Interceptor | P0 | FR-010 |

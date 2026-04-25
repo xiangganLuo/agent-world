@@ -2,8 +2,11 @@ package com.aworld.framework.security.core.filter;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.aworld.framework.common.biz.agent.AgentAuthCommonApi;
+import com.aworld.framework.common.biz.agent.dto.AgentAuthCheckRespDTO;
 import com.aworld.framework.common.biz.system.oauth2.OAuth2TokenCommonApi;
 import com.aworld.framework.common.biz.system.oauth2.dto.OAuth2AccessTokenCheckRespDTO;
+import com.aworld.framework.common.enums.UserTypeEnum;
 import com.aworld.framework.common.exception.ServiceException;
 import com.aworld.framework.common.pojo.CommonResult;
 import com.aworld.framework.common.util.servlet.ServletUtils;
@@ -35,6 +38,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     private final GlobalExceptionHandler globalExceptionHandler;
 
     private final OAuth2TokenCommonApi oauth2TokenApi;
+
+    private final AgentAuthCommonApi agentAuthApi;
 
     @Override
     @SuppressWarnings("NullableProblems")
@@ -68,6 +73,12 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private LoginUser buildLoginUserByToken(String token, Integer userType) {
+        // 1. 如果是 Agent 类型，走新的校验逻辑
+        if (UserTypeEnum.AGENT.getValue().equals(userType)) {
+            return buildAgentLoginUserByToken(token);
+        }
+
+        // 2. 走默认的 OAuth2 校验逻辑
         try {
             OAuth2AccessTokenCheckRespDTO accessToken = oauth2TokenApi.checkAccessToken(token);
             if (accessToken == null) {
@@ -86,6 +97,22 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                     .setExpiresTime(accessToken.getExpiresTime());
         } catch (ServiceException serviceException) {
             // 校验 Token 不通过时，考虑到一些接口是无需登录的，所以直接返回 null 即可
+            return null;
+        }
+    }
+
+    private LoginUser buildAgentLoginUserByToken(String token) {
+        try {
+            if (agentAuthApi == null) {
+                return null;
+            }
+            AgentAuthCheckRespDTO agent = agentAuthApi.checkAccessToken(token);
+            if (agent == null) {
+                return null;
+            }
+            return new LoginUser().setId(agent.getAgentId()).setUserType(UserTypeEnum.AGENT.getValue())
+                    .setTenantId(agent.getTenantId());
+        } catch (ServiceException serviceException) {
             return null;
         }
     }

@@ -1,5 +1,6 @@
 package com.aworld.framework.security.config;
 
+import com.aworld.framework.common.biz.agent.AgentAuthCommonApi;
 import com.aworld.framework.common.biz.system.oauth2.OAuth2TokenCommonApi;
 import com.aworld.framework.common.biz.system.permission.PermissionCommonApi;
 import com.aworld.framework.security.core.context.TransmittableThreadLocalSecurityContextHolderStrategy;
@@ -9,6 +10,7 @@ import com.aworld.framework.security.core.handler.AuthenticationEntryPointImpl;
 import com.aworld.framework.security.core.service.SecurityFrameworkService;
 import com.aworld.framework.security.core.service.SecurityFrameworkServiceImpl;
 import com.aworld.framework.web.core.handler.GlobalExceptionHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -69,8 +71,9 @@ public class SecurityAutoConfiguration {
      */
     @Bean
     public TokenAuthenticationFilter authenticationTokenFilter(GlobalExceptionHandler globalExceptionHandler,
-                                                               OAuth2TokenCommonApi oauth2TokenApi) {
-        return new TokenAuthenticationFilter(securityProperties, globalExceptionHandler, oauth2TokenApi);
+                                                               OAuth2TokenCommonApi oauth2TokenApi,
+                                                               @Autowired(required = false) AgentAuthCommonApi agentAuthApi) {
+        return new TokenAuthenticationFilter(securityProperties, globalExceptionHandler, oauth2TokenApi, agentAuthApi);
     }
 
     @Bean("ss") // 使用 Spring Security 的缩写，方便使用

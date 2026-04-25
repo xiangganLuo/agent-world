@@ -27,6 +27,10 @@ public abstract class AuthorizeRequestsCustomizer
         return webProperties.getAppApi().getPrefix() + url;
     }
 
+    protected String buildAgentApi(String url) {
+        return webProperties.getAgentApi().getPrefix() + url;
+    }
+
     @Override
     public int getOrder() {
         return 0;
