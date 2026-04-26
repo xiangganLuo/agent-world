@@ -2,6 +2,7 @@ package com.aworld.core.agent.controller.agent.vo.auth;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 

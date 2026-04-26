@@ -54,4 +54,9 @@ public interface SiteService {
      */
     void offlineSite(Long id);
 
+    /**
+     * 删除场所
+     */
+    void deleteSite(Long id);
+
 }

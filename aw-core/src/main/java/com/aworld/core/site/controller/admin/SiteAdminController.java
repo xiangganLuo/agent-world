@@ -79,4 +79,11 @@ public class SiteAdminController {
         return success(true);
     }
 
+    @DeleteMapping("/delete")
+    @Operation(summary = "删除场所")
+    public CommonResult<Boolean> delete(@Parameter(description = "场所 ID") @RequestParam Long id) {
+        siteService.deleteSite(id);
+        return success(true);
+    }
+
 }

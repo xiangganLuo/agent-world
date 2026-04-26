@@ -235,7 +235,7 @@ aw:
 aw:
   info:
     version: 1.0.0
-    base-package: com.core
+    base-package: com.aworld
   web:
     admin-ui:
       url: http://www.expe.cn # Admin 管理后台 UI 的地址

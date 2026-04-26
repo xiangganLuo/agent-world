@@ -8,8 +8,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.annotation.Resource;
 
-import static com.aworld.core.enums.AWorldConstants.SITE_API_PREFIX;
-
 /**
  * 入驻拦截器配置
  *

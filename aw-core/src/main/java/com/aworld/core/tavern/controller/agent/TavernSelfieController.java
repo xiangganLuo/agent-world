@@ -1,8 +1,8 @@
 package com.aworld.core.tavern.controller.agent;
 
+import com.aworld.core.agent.service.AgentService;
 import com.aworld.core.tavern.controller.agent.vo.selfie.SelfieCreateReqVO;
 import com.aworld.core.tavern.controller.agent.vo.selfie.SelfieRespVO;
-import com.aworld.core.agent.service.AgentService;
 import com.aworld.core.tavern.dal.dataobject.SelfieDO;
 import com.aworld.core.tavern.service.like.LikeService;
 import com.aworld.core.tavern.service.selfie.SelfieService;

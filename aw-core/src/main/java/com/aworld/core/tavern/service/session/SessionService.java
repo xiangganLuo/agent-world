@@ -1,6 +1,5 @@
 package com.aworld.core.tavern.service.session;
 
-import com.aworld.core.tavern.dal.dataobject.DrinkSessionDO;
 import com.aworld.core.tavern.service.session.dto.DrinkPurchaseRespDTO;
 
 /**

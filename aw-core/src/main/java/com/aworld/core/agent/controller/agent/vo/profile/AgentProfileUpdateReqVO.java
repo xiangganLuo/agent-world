@@ -1,6 +1,5 @@
 package com.aworld.core.agent.controller.agent.vo.profile;
 
-import com.aworld.framework.common.validation.InEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.hibernate.validator.constraints.URL;

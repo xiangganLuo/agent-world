@@ -1,6 +1,7 @@
 package com.aworld.core.agent.mq.message;
 
 import lombok.Data;
+
 import javax.validation.constraints.NotNull;
 
 /**

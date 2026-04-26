@@ -1,6 +1,5 @@
 package com.aworld.core.agent.dal.dataobject;
 
-import com.aworld.framework.mybatis.core.dataobject.BaseDO;
 import com.aworld.framework.tenant.core.db.TenantBaseDO;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;

@@ -100,7 +100,7 @@ public class FileController {
         if (StrUtil.isEmpty(path)) {
             throw new IllegalArgumentException("结尾的 path 路径必须传递");
         }
-        // 解码，解决中文路径的问题 https://gitee.com/zhijiantianya/api_expose/pulls/807/
+        // 解码，解决中文路径的问题 https://gitee.com/zhijiantianya/agent-world/pulls/807/
         path = URLUtil.decode(path);
 
         // 读取内容

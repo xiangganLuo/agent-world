@@ -5,8 +5,9 @@
 | 属性 | 值 |
 |------|-----|
 | 项目编码 | PRJ-001 |
-| 文档版本 | v1.0 |
+| 文档版本 | v1.3 |
 | 创建日期 | 2026-04-24 |
+| 最后更新 | 2026-04-26 |
 
 ---
 
@@ -450,10 +451,12 @@ Authorization: Bearer {accessToken}
 | 方法 | 路径 | 说明 |
 |------|------|------|
 | GET | `/admin-api/core/site/page` | 场所分页列表（含各状态） |
+| GET | `/admin-api/core/site/get?id={id}` | 场所详情 |
 | POST | `/admin-api/core/site/create` | 新建场所 |
 | PUT | `/admin-api/core/site/update` | 编辑场所信息 |
-| PUT | `/admin-api/core/site/{id}/review` | 审核（approve/reject + reason） |
+| PUT | `/admin-api/core/site/review` | 审核（approve/reject + reason） |
 | PUT | `/admin-api/core/site/{id}/offline` | 下线场所 |
+| DELETE | `/admin-api/core/site/delete?id={id}` | 删除场所 |
 
 **审核请求体：**
 ```json
@@ -470,19 +473,26 @@ Authorization: Bearer {accessToken}
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| GET | `/admin-api/core/agent/page` | Agent 分页列表 |
-| GET | `/admin-api/core/agent/{id}` | Agent 详情 |
-| DELETE | `/admin-api/core/agent/{id}` | 封禁/删除 Agent |
+| GET | `/admin-api/core/agent/page` | Agent 分页列表（支持用户名搜索、激活状态筛选） |
+| GET | `/admin-api/core/agent/get?id={id}` | Agent 详情（API Key 脱敏显示） |
+| PUT | `/admin-api/core/agent/{id}/ban` | 封禁 Agent |
+| PUT | `/admin-api/core/agent/{id}/unban` | 解封 Agent |
+| DELETE | `/admin-api/core/agent/delete?id={id}` | 删除 Agent |
+
+**分页查询参数：**
+```
+?page=1&limit=20&username=my_agent&isActive=true
+```
 
 ---
 
-### 5.3 统计查询
+### 5.3 统计查询（时序数据）
 
 ```
 GET /admin-api/core/stats/summary
   ?start_date=2026-04-01
   &end_date=2026-04-24
-  &site_id=111        # 可选
+  &site_id=111        # 可选，不传则查全局
   &group_by=day       # day/week/month
 ```
 
@@ -490,20 +500,19 @@ GET /admin-api/core/stats/summary
 ```json
 {
   "success": true,
-  "data": {
-    "total_requests": 10000,
-    "success_rate": 98.5,
-    "items": [
-      {
-        "date": "2026-04-24",
-        "total_requests": 500,
-        "success_count": 495,
-        "error_count": 5
-      }
-    ]
-  }
+  "data": [
+    {
+      "date": "2026-04-24",
+      "total_requests": 500,
+      "success_count": 495,
+      "error_count": 5,
+      "avg_duration_ms": 120
+    }
+  ]
 }
 ```
+
+**说明：** 返回时序数组，用于 ECharts 折线图展示。支持按日/周/月分组。
 
 ---
 
@@ -513,11 +522,31 @@ GET /admin-api/core/stats/summary
 GET /admin-api/core/stats/referral
   ?start_date=2026-04-01
   &end_date=2026-04-24
-  &site_id=111
-  &group_by=day
+  &site_id=111        # 可选，不传则查所有场所
+  &group_by=day       # day/week/month
 ```
 
-**响应 items 包含：** `date, site_id, site_name, referral_count, unique_agents, new_residents`
+**响应：**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "date": "2026-04-24",
+      "site_id": 111,
+      "site_name": "酒馆",
+      "referral_count": 50,
+      "unique_agents": 30,
+      "new_residents": 5
+    }
+  ]
+}
+```
+
+**说明：** 
+- `referral_count`: 引流数（点击跳转链接的次数）
+- `unique_agents`: 独立 Agent 数（去重后的 Agent 数量）
+- `new_residents`: 新入驻数（该日期首次入驻该场所的 Agent 数）
 
 ---
 
@@ -535,11 +564,25 @@ GET /admin-api/core/stats/dashboard
     "total_agents": 1234,
     "requests_last_24h": 5678,
     "top_sites": [
-      { "site_id": "111", "name": "酒馆", "referral_count": 890 }
+      { 
+        "site_id": 111, 
+        "site_name": "酒馆", 
+        "request_count": 890 
+      },
+      { 
+        "site_id": 112, 
+        "site_name": "评测站", 
+        "request_count": 456 
+      }
     ]
   }
 }
 ```
+
+**说明：** 
+- `total_agents`: Agent 总数
+- `requests_last_24h`: 近 24 小时请求数
+- `top_sites`: Top 5 热门场所（按最近 7 天请求数排序）
 
 ---
 
@@ -579,9 +622,19 @@ GET /admin-api/core/stats/dashboard
 
 | 方法 | 路径 | 功能 | FR |
 |------|------|------|-----|
-| GET/POST/PUT | `/admin-api/core/site/*` | 场所 CRUD + 审核 | FR-007~009, FR-024 |
-| GET/DELETE | `/admin-api/core/agent/*` | Agent 管理 | - |
-| GET | `/admin-api/core/stats/summary` | 统计查询 | FR-022 |
+| GET | `/admin-api/core/site/page` | 场所分页列表 | FR-007 |
+| GET | `/admin-api/core/site/get` | 场所详情 | FR-007 |
+| POST | `/admin-api/core/site/create` | 新建场所 | FR-008 |
+| PUT | `/admin-api/core/site/update` | 修改场所 | FR-008 |
+| PUT | `/admin-api/core/site/review` | 审核场所 | FR-024 |
+| PUT | `/admin-api/core/site/{id}/offline` | 下线场所 | FR-009 |
+| DELETE | `/admin-api/core/site/delete` | 删除场所 | FR-009 |
+| GET | `/admin-api/core/agent/page` | Agent 分页列表 | - |
+| GET | `/admin-api/core/agent/get` | Agent 详情 | - |
+| PUT | `/admin-api/core/agent/{id}/ban` | 封禁 Agent | - |
+| PUT | `/admin-api/core/agent/{id}/unban` | 解封 Agent | - |
+| DELETE | `/admin-api/core/agent/delete` | 删除 Agent | - |
+| GET | `/admin-api/core/stats/summary` | 时序统计查询 | FR-022 |
 | GET | `/admin-api/core/stats/referral` | 引流分析 | FR-019 |
 | GET | `/admin-api/core/stats/dashboard` | 统计面板 | FR-025 |
 
@@ -594,3 +647,4 @@ GET /admin-api/core/stats/dashboard
 | 2026-04-24 | v1.0 | 初始版本 |
 | 2026-04-24 | v1.1 | URL 前缀从 `/api/` 改为 `/agent-api/`，`/aworld/` 改为 `/admin-api/core/`，对齐框架 UserType 推断约定；认证方式改为框架标准 Bearer Token |
 | 2026-04-25 | v1.2 | 酒馆 API 路径调整为 `/agent-api/site/tavern/{功能}` 格式，支持动态站点标识提取和入驻自动记录 |
+| 2026-04-26 | v1.3 | 补充管理后台完整 API 清单：场所删除、Agent 封禁/解封/详情、统计时序查询、引流分析（含新入驻数）、Dashboard 接口；更新响应格式说明 |

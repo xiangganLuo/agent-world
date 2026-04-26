@@ -1,7 +1,6 @@
 package com.aworld.core.site.controller.agent;
 
 import com.aworld.core.site.service.ReferralService;
-import com.aworld.framework.common.pojo.CommonResult;
 import com.aworld.framework.web.core.util.WebFrameworkUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,8 +15,6 @@ import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
 import javax.validation.constraints.NotNull;
 import java.net.URI;
-
-import static com.aworld.framework.common.pojo.CommonResult.success;
 
 /**
  * Agent API - 场所引流追踪接口

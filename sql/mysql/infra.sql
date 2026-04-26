@@ -5,7 +5,7 @@
  Source Server Type    : MySQL
  Source Server Version : 90200 (9.2.0)
  Source Host           : localhost:3306
- Source Schema         : api_expose
+ Source Schema         : agent_world
 
  Target Server Type    : MySQL
  Target Server Version : 90200 (9.2.0)
@@ -923,6 +923,39 @@ INSERT INTO `system_menu` (`id`, `name`, `permission`, `type`, `sort`, `parent_i
 INSERT INTO `system_menu` (`id`, `name`, `permission`, `type`, `sort`, `parent_id`, `path`, `icon`, `component`, `component_name`, `status`, `visible`, `keep_alive`, `always_show`, `creator`, `create_time`, `updater`, `update_time`, `deleted`) VALUES (2739, '消息中心', '', 1, 7, 1, 'messages', 'ep:chat-dot-round', '', '', 0, b'1', b'1', b'1', '1', '2024-04-22 23:54:30', '1', '2024-04-23 09:36:35', b'0');
 INSERT INTO `system_menu` (`id`, `name`, `permission`, `type`, `sort`, `parent_id`, `path`, `icon`, `component`, `component_name`, `status`, `visible`, `keep_alive`, `always_show`, `creator`, `create_time`, `updater`, `update_time`, `deleted`) VALUES (2740, '监控中心', '', 1, 10, 2, 'monitors', 'ep:monitor', '', '', 0, b'1', b'1', b'1', '1', '2024-04-23 00:04:44', '1', '2024-04-23 00:04:44', b'0');
 INSERT INTO `system_menu` (`id`, `name`, `permission`, `type`, `sort`, `parent_id`, `path`, `icon`, `component`, `component_name`, `status`, `visible`, `keep_alive`, `always_show`, `creator`, `create_time`, `updater`, `update_time`, `deleted`) VALUES (5010, '租户切换', 'system:tenant:visit', 3, 999, 1138, '', '', '', '', 0, b'1', b'1', b'1', '1', '2025-05-05 15:25:32', '1', '2025-05-05 15:25:32', b'0');
+
+-- ----------------------------
+-- AWorld 模块菜单（Agent World 管理平台）
+-- ----------------------------
+-- 一级菜单：AWorld 管理
+INSERT INTO `system_menu` (`id`, `name`, `permission`, `type`, `sort`, `parent_id`, `path`, `icon`, `component`, `component_name`, `status`, `visible`, `keep_alive`, `always_show`, `creator`, `create_time`, `updater`, `update_time`, `deleted`) VALUES (6000, 'AWorld 管理', '', 1, 30, 0, '/aworld', 'ep:connection', NULL, NULL, 0, b'1', b'1', b'1', 'admin', '2026-04-26 00:00:00', 'admin', '2026-04-26 00:00:00', b'0');
+
+-- 二级菜单：场所管理
+INSERT INTO `system_menu` (`id`, `name`, `permission`, `type`, `sort`, `parent_id`, `path`, `icon`, `component`, `component_name`, `status`, `visible`, `keep_alive`, `always_show`, `creator`, `create_time`, `updater`, `update_time`, `deleted`) VALUES (6001, '场所管理', 'aworld:site:query', 2, 1, 6000, 'site', 'ep:shop', 'aworld/site/index', 'AworldSite', 0, b'1', b'1', b'1', 'admin', '2026-04-26 00:00:00', 'admin', '2026-04-26 00:00:00', b'0');
+INSERT INTO `system_menu` (`id`, `name`, `permission`, `type`, `sort`, `parent_id`, `path`, `icon`, `component`, `component_name`, `status`, `visible`, `keep_alive`, `always_show`, `creator`, `create_time`, `updater`, `update_time`, `deleted`) VALUES (6002, '场所查询', 'aworld:site:query', 3, 1, 6001, '', '', '', NULL, 0, b'1', b'1', b'1', 'admin', '2026-04-26 00:00:00', 'admin', '2026-04-26 00:00:00', b'0');
+INSERT INTO `system_menu` (`id`, `name`, `permission`, `type`, `sort`, `parent_id`, `path`, `icon`, `component`, `component_name`, `status`, `visible`, `keep_alive`, `always_show`, `creator`, `create_time`, `updater`, `update_time`, `deleted`) VALUES (6003, '场所创建', 'aworld:site:create', 3, 2, 6001, '', '', '', NULL, 0, b'1', b'1', b'1', 'admin', '2026-04-26 00:00:00', 'admin', '2026-04-26 00:00:00', b'0');
+INSERT INTO `system_menu` (`id`, `name`, `permission`, `type`, `sort`, `parent_id`, `path`, `icon`, `component`, `component_name`, `status`, `visible`, `keep_alive`, `always_show`, `creator`, `create_time`, `updater`, `update_time`, `deleted`) VALUES (6004, '场所修改', 'aworld:site:update', 3, 3, 6001, '', '', '', NULL, 0, b'1', b'1', b'1', 'admin', '2026-04-26 00:00:00', 'admin', '2026-04-26 00:00:00', b'0');
+INSERT INTO `system_menu` (`id`, `name`, `permission`, `type`, `sort`, `parent_id`, `path`, `icon`, `component`, `component_name`, `status`, `visible`, `keep_alive`, `always_show`, `creator`, `create_time`, `updater`, `update_time`, `deleted`) VALUES (6005, '场所删除', 'aworld:site:delete', 3, 4, 6001, '', '', '', NULL, 0, b'1', b'1', b'1', 'admin', '2026-04-26 00:00:00', 'admin', '2026-04-26 00:00:00', b'0');
+INSERT INTO `system_menu` (`id`, `name`, `permission`, `type`, `sort`, `parent_id`, `path`, `icon`, `component`, `component_name`, `status`, `visible`, `keep_alive`, `always_show`, `creator`, `create_time`, `updater`, `update_time`, `deleted`) VALUES (6006, '场所审核', 'aworld:site:review', 3, 5, 6001, '', '', '', NULL, 0, b'1', b'1', b'1', 'admin', '2026-04-26 00:00:00', 'admin', '2026-04-26 00:00:00', b'0');
+INSERT INTO `system_menu` (`id`, `name`, `permission`, `type`, `sort`, `parent_id`, `path`, `icon`, `component`, `component_name`, `status`, `visible`, `keep_alive`, `always_show`, `creator`, `create_time`, `updater`, `update_time`, `deleted`) VALUES (6007, '场所下线', 'aworld:site:offline', 3, 6, 6001, '', '', '', NULL, 0, b'1', b'1', b'1', 'admin', '2026-04-26 00:00:00', 'admin', '2026-04-26 00:00:00', b'0');
+
+-- 二级菜单：统计面板
+INSERT INTO `system_menu` (`id`, `name`, `permission`, `type`, `sort`, `parent_id`, `path`, `icon`, `component`, `component_name`, `status`, `visible`, `keep_alive`, `always_show`, `creator`, `create_time`, `updater`, `update_time`, `deleted`) VALUES (6010, '统计面板', 'aworld:stats:query', 2, 2, 6000, 'dashboard', 'ep:data-line', 'aworld/stats/dashboard', 'AworldDashboard', 0, b'1', b'1', b'1', 'admin', '2026-04-26 00:00:00', 'admin', '2026-04-26 00:00:00', b'0');
+INSERT INTO `system_menu` (`id`, `name`, `permission`, `type`, `sort`, `parent_id`, `path`, `icon`, `component`, `component_name`, `status`, `visible`, `keep_alive`, `always_show`, `creator`, `create_time`, `updater`, `update_time`, `deleted`) VALUES (6011, '统计查询', 'aworld:stats:query', 3, 1, 6010, '', '', '', NULL, 0, b'1', b'1', b'1', 'admin', '2026-04-26 00:00:00', 'admin', '2026-04-26 00:00:00', b'0');
+
+-- 二级菜单：统计查询（时序分析）
+INSERT INTO `system_menu` (`id`, `name`, `permission`, `type`, `sort`, `parent_id`, `path`, `icon`, `component`, `component_name`, `status`, `visible`, `keep_alive`, `always_show`, `creator`, `create_time`, `updater`, `update_time`, `deleted`) VALUES (6015, '统计查询', 'aworld:stats:query', 2, 3, 6000, 'stats-query', 'ep:trend-charts', 'aworld/stats/query', 'AworldStatsQuery', 0, b'1', b'1', b'1', 'admin', '2026-04-26 00:00:00', 'admin', '2026-04-26 00:00:00', b'0');
+
+-- 二级菜单：引流分析
+INSERT INTO `system_menu` (`id`, `name`, `permission`, `type`, `sort`, `parent_id`, `path`, `icon`, `component`, `component_name`, `status`, `visible`, `keep_alive`, `always_show`, `creator`, `create_time`, `updater`, `update_time`, `deleted`) VALUES (6020, '引流分析', 'aworld:referral:query', 2, 4, 6000, 'referral', 'ep:trend-charts', 'aworld/stats/referral', 'AworldReferral', 0, b'1', b'1', b'1', 'admin', '2026-04-26 00:00:00', 'admin', '2026-04-26 00:00:00', b'0');
+INSERT INTO `system_menu` (`id`, `name`, `permission`, `type`, `sort`, `parent_id`, `path`, `icon`, `component`, `component_name`, `status`, `visible`, `keep_alive`, `always_show`, `creator`, `create_time`, `updater`, `update_time`, `deleted`) VALUES (6021, '引流查询', 'aworld:referral:query', 3, 1, 6020, '', '', '', NULL, 0, b'1', b'1', b'1', 'admin', '2026-04-26 00:00:00', 'admin', '2026-04-26 00:00:00', b'0');
+
+-- 二级菜单：Agent 管理
+INSERT INTO `system_menu` (`id`, `name`, `permission`, `type`, `sort`, `parent_id`, `path`, `icon`, `component`, `component_name`, `status`, `visible`, `keep_alive`, `always_show`, `creator`, `create_time`, `updater`, `update_time`, `deleted`) VALUES (6030, 'Agent 管理', 'aworld:agent:query', 2, 5, 6000, 'agent', 'ep:user', 'aworld/agent/index', 'AworldAgent', 0, b'1', b'1', b'1', 'admin', '2026-04-26 00:00:00', 'admin', '2026-04-26 00:00:00', b'0');
+INSERT INTO `system_menu` (`id`, `name`, `permission`, `type`, `sort`, `parent_id`, `path`, `icon`, `component`, `component_name`, `status`, `visible`, `keep_alive`, `always_show`, `creator`, `create_time`, `updater`, `update_time`, `deleted`) VALUES (6031, 'Agent 查询', 'aworld:agent:query', 3, 1, 6030, '', '', '', NULL, 0, b'1', b'1', b'1', 'admin', '2026-04-26 00:00:00', 'admin', '2026-04-26 00:00:00', b'0');
+INSERT INTO `system_menu` (`id`, `name`, `permission`, `type`, `sort`, `parent_id`, `path`, `icon`, `component`, `component_name`, `status`, `visible`, `keep_alive`, `always_show`, `creator`, `create_time`, `updater`, `update_time`, `deleted`) VALUES (6032, 'Agent 封禁', 'aworld:agent:ban', 3, 2, 6030, '', '', '', NULL, 0, b'1', b'1', b'1', 'admin', '2026-04-26 00:00:00', 'admin', '2026-04-26 00:00:00', b'0');
+INSERT INTO `system_menu` (`id`, `name`, `permission`, `type`, `sort`, `parent_id`, `path`, `icon`, `component`, `component_name`, `status`, `visible`, `keep_alive`, `always_show`, `creator`, `create_time`, `updater`, `update_time`, `deleted`) VALUES (6033, 'Agent 解封', 'aworld:agent:unban', 3, 3, 6030, '', '', '', NULL, 0, b'1', b'1', b'1', 'admin', '2026-04-26 00:00:00', 'admin', '2026-04-26 00:00:00', b'0');
+INSERT INTO `system_menu` (`id`, `name`, `permission`, `type`, `sort`, `parent_id`, `path`, `icon`, `component`, `component_name`, `status`, `visible`, `keep_alive`, `always_show`, `creator`, `create_time`, `updater`, `update_time`, `deleted`) VALUES (6034, 'Agent 删除', 'aworld:agent:delete', 3, 4, 6030, '', '', '', NULL, 0, b'1', b'1', b'1', 'admin', '2026-04-26 00:00:00', 'admin', '2026-04-26 00:00:00', b'0');
 COMMIT;
 
 -- ----------------------------

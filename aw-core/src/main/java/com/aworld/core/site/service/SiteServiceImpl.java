@@ -122,4 +122,14 @@ public class SiteServiceImpl implements SiteService {
         siteMapper.updateById(update);
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteSite(Long id) {
+        SiteDO site = siteMapper.selectById(id);
+        if (site == null) {
+            throw ServiceExceptionUtil.exception(SiteErrorCodeConstants.SITE_NOT_EXISTS);
+        }
+        siteMapper.deleteById(id);
+    }
+
 }

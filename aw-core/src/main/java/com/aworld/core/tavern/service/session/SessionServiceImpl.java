@@ -24,11 +24,9 @@ import org.springframework.validation.annotation.Validated;
 import javax.annotation.Resource;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import static com.aworld.core.tavern.enums.SessionStatusEnum.PURCHASED;
-import static com.aworld.framework.common.exception.util.ServiceExceptionUtil.exception;
 
 /**
  * 酒馆买酒会话 Service 实现类

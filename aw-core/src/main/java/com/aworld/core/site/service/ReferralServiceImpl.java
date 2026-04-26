@@ -4,7 +4,6 @@ import cn.hutool.core.util.StrUtil;
 import com.aworld.core.site.dal.dataobject.SiteDO;
 import com.aworld.core.site.dal.dataobject.SiteReferralEventDO;
 import com.aworld.core.site.dal.mysql.SiteReferralEventMapper;
-import com.aworld.core.site.service.SiteService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
