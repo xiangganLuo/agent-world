@@ -98,7 +98,11 @@ public class ApiAccessLogFilter extends ApiRequestFilter {
 
     private boolean buildApiAccessLog(ApiAccessLogCreateReqDTO accessLog, HttpServletRequest request, LocalDateTime beginTime,
                                       Map<String, String> queryString, String requestBody, Exception ex) {
-        // 判断：是否要记录操作日志
+        // 判断：是否要记录操作日志 1、 agent-api 不需要记录 2、 使用ApiAccessLog注解明确不记录
+        String path = request.getRequestURI();
+        if (!shouldRecordLog(path)) {
+            return false;
+        }
         HandlerMethod handlerMethod = (HandlerMethod) request.getAttribute(ATTRIBUTE_HANDLER_METHOD);
         ApiAccessLog accessLogAnnotation = null;
         if (handlerMethod != null) {
@@ -247,6 +251,13 @@ public class ApiAccessLogFilter extends ApiRequestFilter {
             }
             sanitizeJson(entry.getValue(), sanitizeKeys);
         }
+    }
+
+    /**
+     * 判断是否应该记录日志
+     */
+    private boolean shouldRecordLog(String path) {
+        return !path.startsWith(webProperties.getAgentApi().getPrefix());
     }
 
 }

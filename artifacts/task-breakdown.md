@@ -143,22 +143,22 @@
 
 | 任务编号 | 状态 | 任务名称 | 优先级 |
 |---------|------|---------|--------|
-| IT4-DB-001 | ⏳ | 建表 `aworld_site_referral_event` | P0 |
-| IT4-DB-002 | ⏳ | 建表 `aworld_request_log` | P0 |
-| IT4-DB-003 | ⏳ | 建表 `aworld_stats_hourly` | P0 |
-| IT4-DB-004 | ⏳ | 建表 `aworld_stats_daily` | P0 |
+| IT4-DB-001 | ✅ | 建表 `aworld_site_referral_event` | P0 |
+| IT4-DB-002 | ✅ | 建表 `aworld_request_log` | P0 |
+| IT4-DB-003 | ✅ | 建表 `aworld_stats_hourly` | P0 |
+| IT4-DB-004 | ✅ | 建表 `aworld_stats_daily` | P0 |
 
 ### 后端
 
 | 任务编号 | 状态 | 任务名称 | 类型 | 优先级 | 关联 FR |
 |---------|------|---------|------|--------|---------|
-| IT4-BE-001 | ⏳ | `RequestLogFilter`（OncePerRequestFilter）：异步 `@Async` 写 `aworld_request_log` | Filter | P0 | FR-020 |
-| IT4-BE-002 | ⏳ | `ReferralService`：`recordReferral()`（Redis 5min 去重） + 302 重定向 | Service | P0 | FR-018 |
-| IT4-BE-003 | ⏳ | `StatsAggregationJob`（XXL-Job，每小时）：聚合请求日志写 `stats_hourly`/`stats_daily` | Job | P0 | FR-021 |
-| IT4-BE-004 | ⏳ | `ReferralAggregationJob`（每小时）：聚合引流事件，统计引流数/独立 Agent 数/新入驻数 | Job | P0 | FR-021 |
-| IT4-BE-005 | ⏳ | `StatsService`：`querySummary()` / `queryReferral()` / `queryDashboard()` | Service | P1 | FR-022 |
-| IT4-BE-006 | ⏳ | `StatsAdminController`：统计查询、引流分析、面板接口 | Controller | P1 | FR-019, FR-022 |
-| IT4-BE-007 | ⏳ | `RequestLogCleanJob`：定期清理超过 30 天的原始日志 | Job | P1 | FR-020 |
+| IT4-BE-001 | ✅ | `RequestLogFilter`（OncePerRequestFilter）：异步 `@Async` 写 `aworld_request_log` | Filter | P0 | FR-020 |
+| IT4-BE-002 | ✅ | `ReferralService`：`recordReferral()`（Redis 5min 去重） + 302 重定向 | Service | P0 | FR-018 |
+| IT4-BE-003 | ✅ | `StatsAggregationJob`（XXL-Job，每小时）：聚合请求日志写 `stats_hourly`/`stats_daily` | Job | P0 | FR-021 |
+| IT4-BE-004 | ✅ | `ReferralAggregationJob`（每小时）：聚合引流事件，统计引流数/独立 Agent 数/新入驻数 | Job | P0 | FR-021 |
+| IT4-BE-005 | ✅ | `StatsService`：`querySummary()` / `queryReferral()` / `queryDashboard()` | Service | P1 | FR-022 |
+| IT4-BE-006 | ✅ | `StatsAdminController`：统计查询、引流分析、面板接口 | Controller | P1 | FR-019, FR-022 |
+| IT4-BE-007 | ✅ | `RequestLogCleanJob`：定期清理超过 30 天的原始日志 | Job | P1 | FR-020 |
 
 ---
 
