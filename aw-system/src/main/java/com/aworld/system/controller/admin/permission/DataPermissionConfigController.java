@@ -24,6 +24,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 
+import static com.aworld.framework.apilog.core.enums.OperateTypeEnum.*;
 import static com.aworld.framework.common.pojo.CommonResult.success;
 
 @Tag(name = "管理后台 - 数据权限配置")

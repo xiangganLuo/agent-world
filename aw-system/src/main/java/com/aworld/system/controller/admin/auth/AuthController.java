@@ -9,7 +9,6 @@ import com.aworld.framework.datapermission.core.annotation.DataPermission;
 import com.aworld.framework.security.config.SecurityProperties;
 import com.aworld.framework.security.core.util.SecurityFrameworkUtils;
 import com.aworld.system.controller.admin.auth.vo.*;
-import com.aworld.system.controller.admin.auth.vo.*;
 import com.aworld.system.convert.auth.AuthConvert;
 import com.aworld.system.dal.dataobject.permission.MenuDO;
 import com.aworld.system.dal.dataobject.permission.RoleDO;

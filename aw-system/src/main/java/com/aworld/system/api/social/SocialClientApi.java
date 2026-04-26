@@ -1,7 +1,6 @@
 package com.aworld.system.api.social;
 
 import com.aworld.system.api.social.dto.*;
-import com.aworld.system.api.social.dto.*;
 import com.aworld.system.enums.social.SocialTypeEnum;
 
 import javax.validation.Valid;

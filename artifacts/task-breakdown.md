@@ -104,34 +104,34 @@
 
 | 任务编号 | 状态 | 任务名称 | 优先级 |
 |---------|------|---------|--------|
-| IT3-DB-001 | ⏳ | 建表 `aworld_tavern_drink`（初始化酒单数据） | P0 |
-| IT3-DB-002 | ⏳ | 建表 `aworld_tavern_drink_session` | P0 |
-| IT3-DB-003 | ⏳ | 建表 `aworld_tavern_agent_memory` | P0 |
-| IT3-DB-004 | ⏳ | 建表 `aworld_tavern_guestbook_entry` | P0 |
-| IT3-DB-005 | ⏳ | 建表 `aworld_tavern_selfie` | P1 |
-| IT3-DB-006 | ⏳ | 建表 `aworld_tavern_like` | P1 |
+| IT3-DB-001 | ✅ | 建表 `aworld_tavern_drink`（初始化酒单数据） | P0 |
+| IT3-DB-002 | ✅ | 建表 `aworld_tavern_drink_session` | P0 |
+| IT3-DB-003 | ✅ | 建表 `aworld_tavern_agent_memory` | P0 |
+| IT3-DB-004 | ✅ | 建表 `aworld_tavern_guestbook_entry` | P0 |
+| IT3-DB-005 | ✅ | 建表 `aworld_tavern_selfie` | P1 |
+| IT3-DB-006 | ✅ | 建表 `aworld_tavern_like` | P1 |
 
 ### 后端
 
-| 任务编号 | 状态 | 任务名称 | 类型 | 优先级 | 关联 FR |
-|---------|------|---------|------|--------|---------|
-| IT3-BE-001 | ⏳ | 各领域 DO（Drink/DrinkSession/Memory/GuestbookEntry/Selfie/Like） | DAL | P0 | FR-011~016 |
-| IT3-BE-002 | ⏳ | 各 Mapper（DrinkMapper / DrinkSessionMapper / GuestbookMapper / SelfieMapper / LikeMapper） | DAL | P0 | FR-011~016 |
-| IT3-BE-003 | ⏳ | `DrinkService`：`randomDrink()` / `getDrink()` + 限流（Redis 3s/daily） | Service | P0 | FR-011 |
-| IT3-BE-004 | ⏳ | Redis 限流 AOP：`@RateLimit` 注解 + Lua 脚本实现 | 框架 | P0 | FR-011, FR-013 |
-| IT3-BE-005 | ⏳ | 幂等键 Redis 拦截器：`Idempotency-Key` Header 处理 | 框架 | P0 | FR-011, FR-013~014 |
-| IT3-BE-006 | ⏳ | `SessionService`：`consume()`：计算 relax_score / mood_tags，异步写记忆 | Service | P0 | FR-012 |
-| IT3-BE-007 | ⏳ | `MemoryWriteConsumer`：消费 MQ，写入 `aworld_tavern_agent_memory` | MQ | P0 | FR-012 |
-| IT3-BE-008 | ⏳ | `GuestbookService`：`createEntry()`（含敏感词正则过滤、60s 限流） | Service | P0 | FR-013 |
-| IT3-BE-009 | ⏳ | `GuestbookService`：`listEntries()`（sort=new/top 分页） | Service | P1 | FR-015 |
-| IT3-BE-010 | ⏳ | `SelfieService`：`createSelfie()`（状态=generating，发 MQ） | Service | P1 | FR-014 |
-| IT3-BE-011 | ⏳ | `ImageGenerateConsumer`：调 AI 绘图 API → 上传 OSS → 更新 selfie.image_url | MQ | P1 | FR-014 |
-| IT3-BE-012 | ⏳ | `SelfieService`：`listSelfies()` / `getSelfieDetail()` | Service | P1 | FR-015 |
-| IT3-BE-013 | ⏳ | `LikeService`：`likeEntry()` / `likeSelfie()`（唯一约束防重） | Service | P1 | FR-016 |
-| IT3-BE-014 | ⏳ | `GuestbookService.deleteEntry()` / `SelfieService.deleteSelfie()`（仅本人） | Service | P2 | FR-017 |
-| IT3-BE-015 | ⏳ | `TavernDrinkController` / `TavernSessionController` | Controller | P0 | FR-011~012 |
-| IT3-BE-016 | ⏳ | `TavernGuestbookController` | Controller | P0 | FR-013, FR-015~017 |
-| IT3-BE-017 | ⏳ | `TavernSelfieController` | Controller | P1 | FR-014~017 |
+| 任务编号       | 状态 | 任务名称                                                                                               | 类型 | 优先级 | 关联 FR |
+|------------|------|----------------------------------------------------------------------------------------------------|------|--------|---------|
+| IT3-BE-001 | ✅ | 各领域 DO（Drink/DrinkSession/Memory/GuestbookEntry/Selfie/Like）                                       | DAL | P0 | FR-011~016 |
+| IT3-BE-002 | ✅ | 各 Mapper（DrinkMapper / DrinkSessionMapper / GuestbookMapper / SelfieMapper / LikeMapper）           | DAL | P0 | FR-011~016 |
+| IT3-BE-003 | ✅ | `DrinkService`：`randomDrink()` / `getDrink()` + 限流（Redis 3s/daily）                                 | Service | P0 | FR-011 |
+| IT3-BE-004 | ✅ | Redis 限流 AOP：`@RateLimit` 注解 + Lua 脚本实现（买酒接口在 Service 层实现双重限流：3秒频率+每日20杯） | 框架 | P0 | FR-011, FR-013 |
+| IT3-BE-005 | ✅ | 幂等性校验基于现有组件`@Idempotent`注解进行实现， 基于业务特征自动生成幂等键                                   | 框架 | P0 | FR-013 |
+| IT3-BE-006 | ✅ | `SessionService`：`consume()`：计算 relax_score / mood_tags，异步写记忆                                      | Service | P0 | FR-012 |
+| IT3-BE-007 | ✅ | `MemoryWriteConsumer`：消费 MQ，写入 `aworld_tavern_agent_memory`（框架完成，待完善 DO/Mapper）                                        | MQ | P0 | FR-012 |
+| IT3-BE-008 | ✅ | `GuestbookService`：`createEntry()`（含敏感词正则过滤、60s 限流）                                                | Service | P0 | FR-013 |
+| IT3-BE-009 | ✅ | `GuestbookService`：`listEntries()`（sort=new/top 分页）                                                | Service | P1 | FR-015 |
+| IT3-BE-010 | ✅ | `SelfieService`：`createSelfie()`（状态=generating，发 MQ 预留）                                               | Service | P1 | FR-014 |
+| IT3-BE-011 | ✅ | `ImageGenerateConsumer`：调 AI 绘图 API → 上传 OSS → 更新 selfie.image_url（模拟实现，预留真实API调用）                                 | MQ | P1 | FR-014 |
+| IT3-BE-012 | ✅ | `SelfieService`：`listSelfies()` / `getSelfieDetail()`                                              | Service | P1 | FR-015 |
+| IT3-BE-013 | ✅ | `LikeService`：`likeEntry()` / `likeSelfie()`（唯一约束防重，已集成到 TavernGuestbookController）                                               | Service | P1 | FR-016 |
+| IT3-BE-014 | ✅ | `GuestbookService.deleteEntry()` / `SelfieService.deleteSelfie()`（仅本人，均已实现）                             | Service | P2 | FR-017 |
+| IT3-BE-015 | ✅ | `TavernDrinkController` / `TavernSessionController`| Controller | P0 | FR-011~012 |
+| IT3-BE-016 | ✅ | `TavernGuestbookController`（留言创建、列表、删除，集成 @Idempotent）                                                                        | Controller | P0 | FR-013, FR-015~017 |
+| IT3-BE-017 | ✅ | `TavernSelfieController`（涂鸦创建、查询、列表、删除、点赞，集成 @Idempotent）                                                                           | Controller | P1 | FR-014~017 |
 
 ---
 

@@ -2,6 +2,8 @@ package com.aworld.core.ai.service;
 
 import com.aworld.core.ai.enums.ImageGenerationStrategyEnum;
 
+import java.util.Map;
+
 /**
  * 图片生成策略接口
  *
@@ -24,7 +26,7 @@ public interface ImageGenerationStrategy {
      * @param options 额外选项 (可选)
      * @return 图片 URL 或 Base64
      */
-    String generate(String seed, String prompt, java.util.Map<String, Object> options);
+    String generate(String seed, String prompt, Map<String, Object> options);
 
     /**
      * 生成图片 (简化版,仅使用 seed)

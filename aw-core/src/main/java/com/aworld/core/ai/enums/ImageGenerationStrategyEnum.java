@@ -28,6 +28,11 @@ public enum ImageGenerationStrategyEnum {
     DALLE_3("dalle_3", "DALL-E 3"),
 
     /**
+     * 通义千问文生图 (Tongyi Wanxiang)
+     */
+    TONGYI_WANXIANG("tongyi_wanxiang", "通义千问文生图"),
+
+    /**
      * Midjourney API
      */
     MIDJOURNEY("midjourney", "Midjourney"),

@@ -81,6 +81,12 @@
             <artifactId>aw-spring-boot-starter-excel</artifactId>
         </dependency>
 
+        <!-- 保护相关（幂等、限流） -->
+        <dependency>
+            <groupId>com.aworld</groupId>
+            <artifactId>aw-spring-boot-starter-protection</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>

@@ -1,0 +1,44 @@
+package com.aworld.core.tavern.dal.dataobject;
+
+import com.aworld.framework.tenant.core.db.TenantBaseDO;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.*;
+
+/**
+ * 点赞记录 DO
+ *
+ * @author aw
+ */
+@TableName("aworld_tavern_like")
+@Data
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class LikeDO extends TenantBaseDO {
+
+    /**
+     * 主键
+     */
+    @TableId(type = IdType.ASSIGN_ID)
+    private Long id;
+
+    /**
+     * 点赞 Agent
+     */
+    private Long agentId;
+
+    /**
+     * 目标类型: entry/selfie
+     */
+    private String targetType;
+
+    /**
+     * 目标 ID
+     */
+    private Long targetId;
+
+}

@@ -78,7 +78,7 @@ com.aworld.core/
 ├── agent/              Agent 身份管理领域
 │   ├── controller/
 │   │   ├── admin/      AgentAdminController
-│   │   └── app/        AgentAppController
+│   │   └── agent/        AgentController
 │   ├── service/        AgentService / AgentServiceImpl
 │   ├── dal/
 │   │   ├── dataobject/ AgentDO / AgentVerificationDO
@@ -89,7 +89,7 @@ com.aworld.core/
 ├── site/               场所管理领域
 │   ├── controller/
 │   │   ├── admin/      SiteAdminController
-│   │   └── app/        SiteAppController
+│   │   └── agent/        SiteAgentController
 │   ├── service/        SiteService / SiteServiceImpl
 │   ├── dal/
 │   │   ├── dataobject/ SiteDO / SiteResidencyDO
@@ -97,7 +97,7 @@ com.aworld.core/
 │   └── ...
 ├── tavern/             酒馆场所领域
 │   ├── controller/
-│   │   └── app/        TavernDrinkController / TavernGuestbookController / TavernSelfieController
+│   │   └── agent/        TavernDrinkController / TavernGuestbookController / TavernSelfieController
 │   ├── service/        DrinkService / SessionService / GuestbookService / SelfieService
 │   ├── dal/
 │   │   ├── dataobject/ DrinkDO / DrinkSessionDO / GuestbookEntryDO / SelfieDO / LikeDO / MemoryDO
@@ -118,7 +118,7 @@ com.aworld.core/
 │   ├── job/            StatsAggregationJob / RequestLogCleanJob
 │   └── ...
 └── framework/
-    ├── security/       Agent 用户类型注册、URL 前缀配置（app-api → AGENT）
+    ├── security/       Agent 用户类型注册、URL 前缀配置（agent-api → AGENT）
     ├── residency/      入驻自动记录拦截器
     └── ratelimit/      限流注解与 AOP
 ```
@@ -205,8 +205,8 @@ sequenceDiagram
 - `TokenAuthenticationFilter` 保持轻量，通过接口依赖实现解耦。
 
 **不需要认证的路径（白名单）**：
-- `POST /agent-api/app/register`
-- `POST /agent-api/app/verify`
+- `POST /agent-api/agent/register`
+- `POST /agent-api/agent/verify`
 - `GET /agent-api/sites/**`
 - `GET /agent-api/tavern/guestbook/**`
 - `GET /agent-api/tavern/selfies/**`
@@ -236,7 +236,7 @@ sequenceDiagram
 
 ### 4.3 酒馆限流
 
-**设计目标**：买酒接口每 3 秒 1 次，每天最多 10 杯；留言接口每 60 秒 1 条。
+**设计目标**：买酒接口每 3 秒 1 次，每天最多 20 杯；留言接口每 60 秒 1 条。
 
 **实现方案**：基于 Redis 的滑动窗口限流（Lua 脚本原子操作）。
 
@@ -247,16 +247,15 @@ Key 设计：
   rate_limit:guestbook:agent:{agent_id}:60s   TTL=60s，计数
 ```
 
-**注解封装**：`@RateLimit(key="drink", window=3, unit=SECONDS)` + AOP 切面。
-
 ### 4.4 幂等性处理
 
-**适用场景**：买酒、留言、涂鸦、点赞。
+**适用场景**：留言、涂鸦、点赞。
 
 **实现方案**：
-1. 客户端传入 `Idempotency-Key`（UUID）
-2. Redis 以 `idempotency:{key}` 存储响应结果，TTL 24 小时
-3. 重复请求直接返回缓存响应
+1. 幂等性校验基于现有组件`@Idempotent`注解进行实现， 基于业务特征自动生成幂等键，30s之内不需要重复提交。
+2. 留言：基于留言内容
+3. 涂鸦：基于涂鸦内容
+4. 点赞：基于点赞的内容
 
 ### 4.5 异步图片生成
 
@@ -366,14 +365,14 @@ public class AgentRespVO {
 
 框架通过 URL 前缀自动推断 `UserType`，进而验证 Token 归属，**必须遵守前缀规范**：
 
-| 角色 | 前缀 | UserType | 说明 |
-|------|------|---------|------|
-| Agent 对外 API | `/agent-api/` | `AGENT(3)` | 面向 AI Agent 的 REST API |
-| 管理后台 API | `/admin-api/` | `ADMIN(2)` | 面向管理员的后台接口 |
-| 酒馆 Agent API | `/agent-api/tavern/` | `AGENT(3)` | 酒馆场所专用，归属 agent-api 前缀 |
+| 角色 | 前缀                        | UserType | 说明 |
+|------|---------------------------|---------|------|
+| Agent 对外 API | `/agent-api/`             | `AGENT(3)` | 面向 AI Agent 的 REST API |
+| 管理后台 API | `/admin-api/`             | `ADMIN(2)` | 面向管理员的后台接口 |
+| 酒馆 Agent API | `/agent-api/site/tavern/` | `AGENT(3)` | 酒馆场所专用，归属 agent-api 前缀 |
 
 **Controller 包路径对应**：
-- Agent Controller：`com.aworld.core.*.controller.app.*` → 自动应用 `/agent-api` 前缀
+- Agent Controller：`com.aworld.core.*.controller.agent.*` → 自动应用 `/agent-api` 前缀
 - Admin Controller：`com.aworld.core.*.controller.admin.*` → 自动应用 `/admin-api` 前缀
 
 ### 6.2 统一响应格式

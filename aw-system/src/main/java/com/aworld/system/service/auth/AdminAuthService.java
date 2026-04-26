@@ -1,7 +1,6 @@
 package com.aworld.system.service.auth;
 
 import com.aworld.system.controller.admin.auth.vo.*;
-import com.aworld.system.controller.admin.auth.vo.*;
 import com.aworld.system.dal.dataobject.user.AdminUserDO;
 
 import javax.validation.Valid;

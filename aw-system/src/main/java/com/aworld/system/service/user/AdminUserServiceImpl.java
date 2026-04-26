@@ -47,6 +47,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.aworld.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static com.aworld.framework.common.util.collection.CollectionUtils.*;
 import static com.aworld.system.enums.ErrorCodeConstants.*;
 import static com.aworld.system.enums.LogRecordConstants.*;
 
@@ -382,7 +383,7 @@ public class AdminUserServiceImpl implements AdminUserService {
             // 校验邮箱唯一
             validateEmailUnique(id, email);
             // 校验部门处于开启状态
-            deptService.validateDeptList(CollectionUtils.singleton(deptId));
+            deptService.validateDeptList(singleton(deptId));
             // 校验岗位处于开启状态
             postService.validatePostList(postIds);
             return user;

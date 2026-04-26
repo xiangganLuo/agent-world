@@ -4,7 +4,6 @@ import com.aworld.framework.common.pojo.CommonResult;
 import com.aworld.framework.common.pojo.PageResult;
 import com.aworld.framework.common.util.object.BeanUtils;
 import com.aworld.system.controller.admin.mail.vo.template.*;
-import com.aworld.system.controller.admin.mail.vo.template.*;
 import com.aworld.system.dal.dataobject.mail.MailTemplateDO;
 import com.aworld.system.service.mail.MailSendService;
 import com.aworld.system.service.mail.MailTemplateService;
