@@ -14,11 +14,6 @@
             <span class="stat-value">{{ stats.drinkCount }}</span>
             <span class="stat-label">买酒次数</span>
           </div>
-          <div class="stat-trend" v-if="stats.drinkTrend">
-            <span :class="stats.drinkTrend > 0 ? 'trend-up' : 'trend-down'">
-              {{ stats.drinkTrend > 0 ? '↑' : '↓' }} {{ Math.abs(stats.drinkTrend) }}%
-            </span>
-          </div>
         </div>
 
         <!-- 留言数量 -->
@@ -27,11 +22,6 @@
           <div class="stat-content">
             <span class="stat-value">{{ stats.messageCount }}</span>
             <span class="stat-label">留言数量</span>
-          </div>
-          <div class="stat-trend" v-if="stats.messageTrend">
-            <span :class="stats.messageTrend > 0 ? 'trend-up' : 'trend-down'">
-              {{ stats.messageTrend > 0 ? '↑' : '↓' }} {{ Math.abs(stats.messageTrend) }}%
-            </span>
           </div>
         </div>
 
@@ -42,11 +32,6 @@
             <span class="stat-value">{{ stats.selfieCount }}</span>
             <span class="stat-label">涂鸦数量</span>
           </div>
-          <div class="stat-trend" v-if="stats.selfieTrend">
-            <span :class="stats.selfieTrend > 0 ? 'trend-up' : 'trend-down'">
-              {{ stats.selfieTrend > 0 ? '↑' : '↓' }} {{ Math.abs(stats.selfieTrend) }}%
-            </span>
-          </div>
         </div>
 
         <!-- 活跃 Agent -->
@@ -55,11 +40,6 @@
           <div class="stat-content">
             <span class="stat-value">{{ stats.activeAgents }}</span>
             <span class="stat-label">活跃 Agent</span>
-          </div>
-          <div class="stat-trend" v-if="stats.activeTrend">
-            <span :class="stats.activeTrend > 0 ? 'trend-up' : 'trend-down'">
-              {{ stats.activeTrend > 0 ? '↑' : '↓' }} {{ Math.abs(stats.activeTrend) }}%
-            </span>
           </div>
         </div>
       </div>
@@ -70,58 +50,25 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import dayjs from 'dayjs'
+import { getTavernStats, type TavernStatsVO } from '@/api/aworld/tavern'
 
-interface TavernStats {
-  drinkCount: number
-  drinkTrend?: number
-  messageCount: number
-  messageTrend?: number
-  selfieCount: number
-  selfieTrend?: number
-  activeAgents: number
-  activeTrend?: number
-}
-
-const stats = ref<TavernStats>({
+const stats = ref<TavernStatsVO>({
   drinkCount: 0,
   messageCount: 0,
   selfieCount: 0,
   activeAgents: 0
 })
 
-const refreshing = ref(false)
 let refreshTimer: number
 
 // 加载统计数据
 const loadStats = async () => {
   try {
-    refreshing.value = true
-
-    // TODO: 调用 API 获取酒馆统计数据
-    // const response = await getTavernStats()
-    // stats.value = response.data
-
-    // Mock 数据
-    stats.value = {
-      drinkCount: 156,
-      drinkTrend: 12.5,
-      messageCount: 89,
-      messageTrend: -3.2,
-      selfieCount: 34,
-      selfieTrend: 25.8,
-      activeAgents: 47,
-      activeTrend: 8.3
-    }
+    const res = await getTavernStats()
+    stats.value = res.data
   } catch (error) {
     console.error('Failed to load stats:', error)
-  } finally {
-    refreshing.value = false
   }
-}
-
-// 手动刷新
-const handleRefresh = () => {
-  loadStats()
 }
 
 // 暴露方法
@@ -244,47 +191,6 @@ onUnmounted(() => {
   font-size: 0.9rem;
   color: #B29273;
   font-weight: 500;
-}
-
-.stat-trend {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-.trend-up {
-  color: #10B981;
-}
-
-.trend-down {
-  color: #EF4444;
-}
-
-.stats-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 16px;
-  border-top: 1px solid rgba(223, 154, 87, 0.15);
-  color: #B29273;
-  font-size: 0.85rem;
-  gap: 12px;
-}
-
-.refresh-btn {
-  background: rgba(223, 154, 87, 0.15);
-  border: 1px solid rgba(223, 154, 87, 0.3);
-  color: #DF9A57;
-  border-radius: 12px;
-  padding: 6px 16px;
-  transition: all 0.25s ease;
-
-  &:hover {
-    background: rgba(223, 154, 87, 0.25);
-    border-color: #DF9A57;
-  }
 }
 
 /* 响应式设计 */

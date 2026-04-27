@@ -32,11 +32,6 @@
             </div>
           </div>
         </div>
-        
-        <!-- 滚动指示器 -->
-        <div class="scroll-indicator" v-if="showScrollIndicator">
-          <span class="indicator-dot" v-for="i in Math.ceil(drinks.length / visibleCount)" :key="i"></span>
-        </div>
       </div>
     </div>
   </section>
@@ -44,19 +39,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue'
-
-interface Drink {
-  id: number
-  name: string
-  description: string
-  price: string
-  abv: number
-  icon: string
-  isSpecial?: boolean
-}
+import { getDrinkList, type DrinkVO } from '@/api/aworld/tavern'
 
 const scrollRef = ref<HTMLElement | null>(null)
 const showScrollIndicator = ref(false)
+const loading = ref(false)
 
 // 计算可见卡片数量（根据容器宽度）
 const visibleCount = computed(() => {
@@ -66,107 +53,57 @@ const visibleCount = computed(() => {
   return Math.floor(containerWidth / cardWidth)
 })
 
-const drinks = ref<Drink[]>([
-  {
-    id: 1,
-    name: '赛博朋克特调',
-    description: '霓虹蓝与数字橙的完美融合，带着微弱的电流刺激',
-    price: '28',
-    abv: 12,
-    icon: '🍸',
-    isSpecial: true
-  },
-  {
-    id: 2,
-    name: '量子莫吉托',
-    description: '薄荷与青柠在量子态中纠缠，每一口都是惊喜',
-    price: '25',
-    abv: 8,
-    icon: '🍹'
-  },
-  {
-    id: 3,
-    name: '数字威士忌',
-    description: '经过算法陈酿的琥珀色液体，回味悠长',
-    price: '35',
-    abv: 40,
-    icon: '🥃'
-  },
-  {
-    id: 4,
-    name: '虚拟现实IPA',
-    description: '啤酒花的香气在虚拟空间中无限放大',
-    price: '22',
-    abv: 6,
-    icon: '🍺'
-  },
-  {
-    id: 5,
-    name: '神经网络红酒',
-    description: '深度学习酿造的红酒，层次丰富如神经网络',
-    price: '42',
-    abv: 14,
-    icon: '🍷',
-    isSpecial: true
-  },
-  {
-    id: 6,
-    name: '区块链白兰地',
-    description: '不可篡改的经典配方，每一滴都可追溯',
-    price: '38',
-    abv: 38,
-    icon: '🥂'
-  },
-  {
-    id: 7,
-    name: '云端拿铁',
-    description: '数据流萃取的咖啡，带着云端的清香',
-    price: '18',
-    abv: 0,
-    icon: '☕'
-  },
-  {
-    id: 8,
-    name: '二进制鸡尾酒',
-    description: '0和1的完美配比，逻辑与感性的平衡',
-    price: '30',
-    abv: 15,
-    icon: '🍸'
-  },
-  {
-    id: 9,
-    name: '光纤啤酒',
-    description: '光速发酵的金色液体，气泡如数据包般跳跃',
-    price: '20',
-    abv: 5,
-    icon: '🍺'
-  },
-  {
-    id: 10,
-    name: 'API 朗姆酒',
-    description: '接口调用般的顺滑口感，余韵悠长',
-    price: '32',
-    abv: 35,
-    icon: '🥃'
-  },
-  {
-    id: 11,
-    name: '数据库香槟',
-    description: '结构化存储的气泡，查询即饮',
-    price: '45',
-    abv: 12,
-    icon: '🥂',
-    isSpecial: true
-  },
-  {
-    id: 12,
-    name: '递归清酒',
-    description: '层层嵌套的米香，回味无穷',
-    price: '26',
-    abv: 16,
-    icon: '🍶'
+// 酒品图标映射
+const drinkIconMap: Record<string, string> = {
+  'whiskey': '🥃',
+  'vodka': '🍸',
+  'beer': '🍺',
+  'wine': '🍷',
+  'champagne': '🥂',
+  'cocktail': '🍹',
+  'coffee': '☕',
+  'sake': '🍶',
+  'default': '🍷'
+}
+
+// 获取酒品图标
+const getDrinkIcon = (drinkCode: string): string => {
+  const code = drinkCode.toLowerCase()
+  for (const [key, icon] of Object.entries(drinkIconMap)) {
+    if (code.includes(key)) return icon
   }
-])
+  return drinkIconMap.default
+}
+
+const drinks = ref<DrinkVO[]>([])
+
+// 加载酒单数据
+const loadDrinks = async () => {
+  try {
+    loading.value = true
+    const res = await getDrinkList()
+    
+    // 转换数据格式，添加图标和特调标记
+    drinks.value = res.data.map(drink => ({
+      ...drink,
+      price: String(drink.price || 0),
+      abv: drink.alcoholPct,
+      icon: getDrinkIcon(drink.drinkCode),
+      isSpecial: drink.effects?.clarity && drink.effects.clarity > 5
+    }))
+    
+    // 检测是否需要显示滚动指示器
+    setTimeout(() => {
+      if (scrollRef.value) {
+        showScrollIndicator.value = scrollRef.value.scrollWidth > scrollRef.value.clientWidth
+      }
+    }, 100)
+  } catch (error) {
+    console.error('Failed to load drinks:', error)
+  } finally {
+    loading.value = false
+  }
+}
 
 // 自动滚动
 let autoScrollTimer: number
@@ -201,10 +138,8 @@ const stopAutoScroll = () => {
 }
 
 onMounted(() => {
-  // 检测是否需要显示滚动指示器
-  if (scrollRef.value) {
-    showScrollIndicator.value = scrollRef.value.scrollWidth > scrollRef.value.clientWidth
-  }
+  // 加载酒单数据
+  loadDrinks()
   
   // 启动自动滚动
   startAutoScroll()

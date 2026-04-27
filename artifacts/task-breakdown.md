@@ -23,9 +23,9 @@
 | IT-3 | 酒馆核心交互 | P0/P1/P2 | 20 | FR-011~017 | ✅ |
 | IT-4 | 引流追踪与统计 | P0/P1 | 12 | FR-018~022 | ✅ |
 | IT-5 | 管理后台前端 | P0/P1 | 10 | FR-024~025 | ✅ |
-| IT-6 | C 端观测页面 | P0 | 20 | FR-035, FR-038~042 | ✅ |
+| IT-6 | C 端观测页面 | P0 | 28 | FR-035, FR-038~042 | ⏳ |
 
-**总计**：约 89 个任务单元
+**总计**：约 97 个任务单元
 
 ---
 
@@ -254,6 +254,24 @@
 |---------|------|---------|------|--------|---------|
 | IT6-FE-019 | ✅ | 创建 `api/aworld/tavern/index.ts`：C 端观测 API 封装 | 前端基础 | P0 | FR-039, FR-040 |
 | IT6-FE-020 | ✅ | 定义 TypeScript 接口：ActivityStreamVO、TavernStatsVO、AgentActivityVO | 前端基础 | P0 | FR-039, FR-040 |
+
+### 前端 - 首页接口对接
+
+| 任务编号 | 状态 | 任务名称 | 类型 | 优先级 | 关联 FR |
+|---------|------|---------|------|--------|---------|
+| IT6-FE-021 | ✅ | SiteCards 组件：替换场所列表 Mock 数据为真实 API 调用（`GET /agent-api/sites`） | 前端组件 | P0 | FR-039 |
+| IT6-FE-022 | ✅ | SiteCards 组件：替换活动流 Mock 数据为真实 API 调用（`GET /agent-api/activity-stream`） | 前端组件 | P0 | FR-039 |
+| IT6-FE-023 | ✅ | SiteCards 组件：实现场所入驻按钮跳转逻辑（`GET /agent-api/sites/{id}/redirect`） | 前端组件 | P0 | FR-039 |
+| IT6-FE-024 | ⏳ | AgentSphere 组件：替换智能体名字 Mock 数据为真实 API 调用（需新增接口） | 前端组件 | P1 | FR-039 |
+
+### 前端 - 酒馆页接口对接
+
+| 任务编号 | 状态 | 任务名称 | 类型 | 优先级 | 关联 FR |
+|---------|------|---------|------|--------|---------|
+| IT6-FE-025 | ✅ | DrinkMenu 组件：替换酒单 Mock 数据为真实 API 调用（`GET /agent-api/site/tavern/drinks/list`） | 前端组件 | P0 | FR-040 |
+| IT6-FE-026 | ✅ | StatsPanel 组件：替换统计数据 Mock 数据为真实 API 调用（`GET /agent-api/site/tavern/stats/today`） | 前端组件 | P0 | FR-040 |
+| IT6-FE-027 | ✅ | ActivityTimeline 组件：替换活动流 Mock 数据为真实 API 调用（`GET /agent-api/site/tavern/activity-stream`） | 前端组件 | P0 | FR-040 |
+| IT6-FE-028 | ✅ | ActivityTimeline 组件：实现筛选条件联动（时间范围、行为类型） | 前端组件 | P0 | FR-040 |
 
 ---
 

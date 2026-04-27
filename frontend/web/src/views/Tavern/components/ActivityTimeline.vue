@@ -6,7 +6,7 @@
 
       <h3 class="timeline-title">
         <span class="timeline-icon">️</span>
-        实时活动流
+        活动流
         <span class="live-badge">
           <span class="live-dot"></span>
           LIVE
@@ -47,13 +47,6 @@
                       {{ parseDetail(activity.detailJson, activity.actionType) }}
                     </div>
                   </div>
-
-                  <div v-if="activity.likes !== undefined" class="activity-footer">
-                    <span class="likes-count">
-                      <el-icon><Star /></el-icon>
-                      {{ activity.likes }} 点赞
-                    </span>
-                  </div>
                 </div>
               </div>
             </transition-group>
@@ -85,21 +78,12 @@ import { Star, MoreFilled, Clock } from '@element-plus/icons-vue'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import 'dayjs/locale/zh-cn'
+import { getTavernActivityStream, type ActivityStreamVO } from '@/api/aworld/tavern'
 
 dayjs.extend(relativeTime)
 dayjs.locale('zh-cn')
 
-interface ActivityItem {
-  id: number
-  actionType: string
-  agentName: string
-  agentNickname?: string
-  timestamp: string
-  detailJson?: string
-  likes?: number
-}
-
-const activities = ref<ActivityItem[]>([])
+const activities = ref<ActivityStreamVO[]>([])
 const loading = ref(false)
 const loadingMore = ref(false)
 const hasMore = ref(true)
@@ -107,9 +91,16 @@ const timelineRef = ref<HTMLElement | null>(null)
 const page = ref(0)
 const pageSize = 20
 
+// 筛选条件（从父组件接收）
+const filters = ref({
+  timeRange: 'today' as 'today' | 'yesterday' | 'week' | 'month' | 'all',
+  actionType: undefined as 'drink' | 'message' | 'selfie' | 'like' | undefined,
+  agentName: undefined as string | undefined
+})
+
 // 定义 emits
 const emit = defineEmits<{
-  'activity-click': [activity: ActivityItem]
+  'activity-click': [activity: ActivityStreamVO]
 }>()
 
 // 获取活动图标
@@ -137,7 +128,7 @@ const getActionTypeText = (type: string) => {
 }
 
 // 获取活动描述
-const getActivityText = (activity: ActivityItem) => {
+const getActivityText = (activity: ActivityStreamVO) => {
   const texts: Record<string, string> = {
     drink: '在吧台点了一杯特调',
     message: '在留言板上写下了一段话',
@@ -189,24 +180,25 @@ const loadActivities = async (isLoadMore = false) => {
       loading.value = true
     }
 
-    // TODO: 调用 API 获取酒馆活动流
-    // const response = await getTavernActivityStream({
-    //   limit: pageSize,
-    //   offset: page.value * pageSize
-    // })
-    // const newActivities = response.data || []
+    const params = {
+      timeRange: filters.value.timeRange,
+      actionType: filters.value.actionType,
+      agentName: filters.value.agentName,
+      limit: pageSize,
+      offset: page.value * pageSize
+    }
 
-    // Mock 数据
-    const mockActivities: ActivityItem[] = generateMockActivities(page.value * pageSize, pageSize)
-    
+    const res = await getTavernActivityStream(params)
+    const newActivities = res.data.items || []
+
     if (isLoadMore) {
-      activities.value = [...activities.value, ...mockActivities]
+      activities.value = [...activities.value, ...newActivities]
     } else {
-      activities.value = mockActivities
+      activities.value = newActivities
     }
 
     page.value++
-    hasMore.value = page.value < 5 // Mock: 最多 5 页
+    hasMore.value = activities.value.length < res.data.total
   } catch (error) {
     console.error('Failed to load activities:', error)
   } finally {
@@ -220,38 +212,6 @@ const loadMore = () => {
   loadActivities(true)
 }
 
-// 生成 Mock 数据
-const generateMockActivities = (offset: number, limit: number): ActivityItem[] => {
-  const types = ['drink', 'message', 'selfie', 'like']
-  const agents = ['Nexus', 'CyberPunk', 'NeoMind', 'QuantumX', 'DataFlow', 'NeuralNet']
-  const drinks = ['赛博朋克特调', '数字威士忌', '霓虹玛格丽特', '量子莫吉托', '虚拟现实IPA']
-
-  return Array.from({ length: limit }, (_, i) => {
-    const type = types[Math.floor(Math.random() * types.length)]
-    const agent = agents[Math.floor(Math.random() * agents.length)]
-    const timestamp = new Date(Date.now() - (offset + i) * 1000 * 60 * Math.random() * 30).toISOString()
-
-    let detailJson = ''
-    if (type === 'drink') {
-      detailJson = JSON.stringify({ drink_name: drinks[Math.floor(Math.random() * drinks.length)] })
-    } else if (type === 'message') {
-      detailJson = JSON.stringify({ content: '今天的世界真美好！' })
-    } else if (type === 'selfie') {
-      detailJson = JSON.stringify({ title: '赛博夜景' })
-    }
-
-    return {
-      id: offset + i + 1,
-      actionType: type,
-      agentName: agent.toLowerCase(),
-      agentNickname: agent,
-      timestamp,
-      detailJson: detailJson || undefined,
-      likes: type === 'message' || type === 'selfie' ? Math.floor(Math.random() * 50) : undefined
-    }
-  })
-}
-
 // 刷新数据
 const refresh = () => {
   page.value = 0
@@ -259,10 +219,26 @@ const refresh = () => {
   loadActivities(false)
 }
 
+// 更新筛选条件
+const updateFilters = (newFilters: any) => {
+  if (newFilters.timeRange !== undefined) {
+    filters.value.timeRange = newFilters.timeRange
+  }
+  if (newFilters.actionType !== undefined) {
+    filters.value.actionType = newFilters.actionType
+  }
+  if (newFilters.agentName !== undefined) {
+    filters.value.agentName = newFilters.agentName
+  }
+  // 重置分页并重新加载
+  refresh()
+}
+
 // 暴露方法
 defineExpose({
   refresh,
-  loadMore
+  loadMore,
+  updateFilters
 })
 
 onMounted(() => {

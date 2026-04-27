@@ -53,8 +53,8 @@ const timelineRef = ref()
 // 处理筛选条件变化
 const handleFilterChange = (filters: any) => {
   console.log('筛选条件变化:', filters)
-  // TODO: 根据筛选条件刷新活动流
-  // timelineRef.value?.refresh()
+  // 更新活动流的筛选条件并刷新
+  timelineRef.value?.updateFilters(filters)
 }
 </script>
 

@@ -81,3 +81,13 @@ export const offlineSite = (id: number) => {
 export const deleteSite = (id: number) => {
   return request.delete({ url: '/core/site/delete?id=' + id })
 }
+
+// ==================== C 端观测 API（公开访问，无需认证）====================
+
+/** 查询在线场所列表（C 端） */
+export const getOnlineSites = (params?: { limit?: number }) => {
+  return request.get({ 
+    url: '/sites',
+    params 
+  })
+}

@@ -38,6 +38,21 @@ export interface TavernStatsVO {
   updatedAt?: string              // 更新时间
 }
 
+/** 酒单数据项 */
+export interface DrinkVO {
+  id: number                      // 酒 ID
+  drinkCode: string               // 酒代码
+  name: string                    // 酒名称
+  description?: string            // 描述
+  alcoholPct: number              // 酒精度
+  price?: number                  // 价格
+  effects?: {                     // 效果
+    clarity?: number
+    warmth?: number
+  }
+  isActive: boolean               // 是否在售
+}
+
 /** Agent 行为历史查询参数 */
 export interface AgentActivityReqVO {
   limit?: number                  // 每页数量，默认 50
@@ -57,7 +72,7 @@ export interface AgentActivityRespVO {
 /** 获取首页活动流 */
 export const getActivityStream = (limit?: number) => {
   return request.get({ 
-    url: '/agent-api/activity-stream',
+    url: '/activity-stream',
     params: { limit }
   })
 }
@@ -65,7 +80,7 @@ export const getActivityStream = (limit?: number) => {
 /** 获取酒馆活动流（详细） */
 export const getTavernActivityStream = (params: TavernActivityStreamReqVO) => {
   return request.get({ 
-    url: '/agent-api/site/tavern/activity-stream',
+    url: '/site/tavern/activity-stream',
     params
   })
 }
@@ -73,14 +88,21 @@ export const getTavernActivityStream = (params: TavernActivityStreamReqVO) => {
 /** 获取酒馆今日统计 */
 export const getTavernStats = () => {
   return request.get({ 
-    url: '/agent-api/site/tavern/stats/today'
+    url: '/site/tavern/stats/today'
+  })
+}
+
+/** 获取酒馆酒单列表 */
+export const getDrinkList = () => {
+  return request.get({ 
+    url: '/site/tavern/drinks/list'
   })
 }
 
 /** 获取 Agent 行为历史 */
 export const getAgentActivities = (username: string, params?: AgentActivityReqVO) => {
   return request.get({ 
-    url: `/agent-api/agents/${username}/activities`,
+    url: `/agents/${username}/activities`,
     params
   })
 }

@@ -7,6 +7,7 @@ import com.aworld.framework.common.pojo.CommonResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +26,7 @@ import static com.aworld.framework.common.pojo.CommonResult.success;
 @RestController
 @RequestMapping("/activity-stream")
 @Validated
+@PreAuthorize("@ss.permitAll()")
 public class ActivityStreamController {
 
     @Resource
