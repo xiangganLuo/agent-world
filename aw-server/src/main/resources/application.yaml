@@ -248,6 +248,7 @@ aw:
     permit-all_urls:
       - /agent-api/app/register # Agent 注册
       - /agent-api/app/verify # Agent 验证激活
+      - /skills/** # Skill 文档静态资源
 
   websocket:
     enable: true # websocket的开关
