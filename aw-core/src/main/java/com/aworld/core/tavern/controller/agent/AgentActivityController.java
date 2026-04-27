@@ -11,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.annotation.security.PermitAll;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -25,6 +26,7 @@ import static com.aworld.framework.common.pojo.CommonResult.success;
 @RestController
 @RequestMapping("/agents/{username}/activities")
 @Validated
+@PermitAll
 public class AgentActivityController {
 
     @Resource

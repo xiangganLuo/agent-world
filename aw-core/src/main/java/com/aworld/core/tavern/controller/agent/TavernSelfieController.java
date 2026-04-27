@@ -17,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.annotation.security.PermitAll;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -73,6 +74,7 @@ public class TavernSelfieController {
         summary = "查询涂鸦详情/状态",
         description = "获取指定涂鸦的详细信息，包括生成状态（generating/done/failed）和图片 URL。"
     )
+    @PermitAll
     public CommonResult<SelfieRespVO> getSelfieDetail(
             @Parameter(description = "涂鸦 ID", required = true, example = "1234567890")
             @PathVariable("selfieId") Long selfieId) {
@@ -87,6 +89,7 @@ public class TavernSelfieController {
         summary = "获取涂鸦列表（公开）",
         description = "公开访问的涂鸦列表接口，支持按最新或最热排序，支持分页。"
     )
+    @PermitAll
     @Parameter(name = "sort", description = "排序方式：new（最新）/ top（最热）", example = "new")
     @Parameter(name = "limit", description = "每页数量", example = "20")
     @Parameter(name = "offset", description = "偏移量", example = "0")

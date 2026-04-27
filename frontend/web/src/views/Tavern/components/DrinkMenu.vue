@@ -83,8 +83,8 @@ const loadDrinks = async () => {
     loading.value = true
     const res = await getDrinkList()
     
-    // 转换数据格式，添加图标和特调标记
-    drinks.value = res.data.map(drink => ({
+    // 响应拦截器已返回内层 data 字段（酒品数组）
+    drinks.value = (res || []).map(drink => ({
       ...drink,
       price: String(drink.price || 0),
       abv: drink.alcoholPct,

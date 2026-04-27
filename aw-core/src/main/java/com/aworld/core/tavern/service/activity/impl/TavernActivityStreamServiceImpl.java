@@ -5,6 +5,7 @@ import com.aworld.core.agent.dal.dataobject.AgentDO;
 import com.aworld.core.agent.dal.mysql.AgentMapper;
 import com.aworld.core.tavern.controller.agent.vo.activity.ActivityStreamRespVO;
 import com.aworld.core.tavern.controller.agent.vo.activity.TavernActivityStreamQueryReqVO;
+import com.aworld.core.tavern.controller.agent.vo.activity.TavernActivityStreamRespVO;
 import com.aworld.core.tavern.dal.dataobject.DrinkDO;
 import com.aworld.core.tavern.dal.dataobject.DrinkSessionDO;
 import com.aworld.core.tavern.dal.dataobject.GuestbookEntryDO;
@@ -50,7 +51,7 @@ public class TavernActivityStreamServiceImpl implements TavernActivityStreamServ
     private DrinkMapper drinkMapper;
 
     @Override
-    public List<ActivityStreamRespVO> queryTavernActivityStream(TavernActivityStreamQueryReqVO reqVO) {
+    public TavernActivityStreamRespVO queryTavernActivityStream(TavernActivityStreamQueryReqVO reqVO) {
         // 参数校验
         if (reqVO.getLimit() == null || reqVO.getLimit() <= 0 || reqVO.getLimit() > 100) {
             throw new IllegalArgumentException("limit 必须在 1-100 之间");
@@ -59,7 +60,7 @@ public class TavernActivityStreamServiceImpl implements TavernActivityStreamServ
             throw new IllegalArgumentException("offset 不能为负数");
         }
 
-        List<ActivityStreamRespVO> result = new ArrayList<>();
+        List<ActivityStreamRespVO> allActivities = new ArrayList<>();
 
         // 解析时间范围
         TimeRangeEnum timeRangeEnum = TimeRangeEnum.getByValue(reqVO.getTimeRange());
@@ -82,7 +83,12 @@ public class TavernActivityStreamServiceImpl implements TavernActivityStreamServ
                 if (agent != null) {
                     wrapper.eq(DrinkSessionDO::getAgentId, agent.getId());
                 } else {
-                    return result; // Agent 不存在，返回空列表
+                    return TavernActivityStreamRespVO.builder()
+                            .items(new ArrayList<>())
+                            .total(0L)
+                            .limit(reqVO.getLimit())
+                            .offset(reqVO.getOffset())
+                            .build();
                 }
             }
             
@@ -94,7 +100,7 @@ public class TavernActivityStreamServiceImpl implements TavernActivityStreamServ
                 AgentDO agent = agentMapper.selectById(session.getAgentId());
                 DrinkDO drink = drinkMapper.selectById(session.getDrinkId());
                 if (agent != null && drink != null) {
-                    result.add(ActivityStreamRespVO.builder()
+                    allActivities.add(ActivityStreamRespVO.builder()
                         .id(session.getId())
                         .agentName(agent.getUsername())
                         .agentNickname(agent.getNickname())
@@ -122,7 +128,12 @@ public class TavernActivityStreamServiceImpl implements TavernActivityStreamServ
                 if (agent != null) {
                     wrapper.eq(GuestbookEntryDO::getAgentId, agent.getId());
                 } else {
-                    return result;
+                    return TavernActivityStreamRespVO.builder()
+                        .items(new ArrayList<>())
+                        .total(0L)
+                        .limit(reqVO.getLimit())
+                        .offset(reqVO.getOffset())
+                        .build();
                 }
             }
             
@@ -133,7 +144,7 @@ public class TavernActivityStreamServiceImpl implements TavernActivityStreamServ
             for (GuestbookEntryDO entry : entries) {
                 AgentDO agent = agentMapper.selectById(entry.getAgentId());
                 if (agent != null) {
-                    result.add(ActivityStreamRespVO.builder()
+                    allActivities.add(ActivityStreamRespVO.builder()
                         .id(entry.getId())
                         .agentName(agent.getUsername())
                         .agentNickname(agent.getNickname())
@@ -161,7 +172,12 @@ public class TavernActivityStreamServiceImpl implements TavernActivityStreamServ
                 if (agent != null) {
                     wrapper.eq(SelfieDO::getAgentId, agent.getId());
                 } else {
-                    return result;
+                    return TavernActivityStreamRespVO.builder()
+                        .items(new ArrayList<>())
+                        .total(0L)
+                        .limit(reqVO.getLimit())
+                        .offset(reqVO.getOffset())
+                        .build();
                 }
             }
             
@@ -172,7 +188,7 @@ public class TavernActivityStreamServiceImpl implements TavernActivityStreamServ
             for (SelfieDO selfie : selfies) {
                 AgentDO agent = agentMapper.selectById(selfie.getAgentId());
                 if (agent != null) {
-                    result.add(ActivityStreamRespVO.builder()
+                    allActivities.add(ActivityStreamRespVO.builder()
                         .id(selfie.getId())
                         .agentName(agent.getUsername())
                         .agentNickname(agent.getNickname())
@@ -184,12 +200,25 @@ public class TavernActivityStreamServiceImpl implements TavernActivityStreamServ
             }
         }
 
-        // 按时间倒序排序并截取 limit 条
-        result.sort((a, b) -> b.getTimestamp().compareTo(a.getTimestamp()));
-        return result.stream()
+        // 按时间倒序排序
+        allActivities.sort((a, b) -> b.getTimestamp().compareTo(a.getTimestamp()));
+        
+        // 计算总数
+        Long total = (long) allActivities.size();
+        
+        // 分页截取
+        List<ActivityStreamRespVO> pagedActivities = allActivities.stream()
             .skip(reqVO.getOffset())
             .limit(reqVO.getLimit())
             .collect(Collectors.toList());
+        
+        // 返回分页结果
+        return TavernActivityStreamRespVO.builder()
+            .items(pagedActivities)
+            .total(total)
+            .limit(reqVO.getLimit())
+            .offset(reqVO.getOffset())
+            .build();
     }
 
 }

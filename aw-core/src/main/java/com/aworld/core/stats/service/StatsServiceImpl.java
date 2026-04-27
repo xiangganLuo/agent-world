@@ -1,5 +1,6 @@
 package com.aworld.core.stats.service;
 
+import com.aworld.core.agent.dal.dataobject.AgentDO;
 import com.aworld.core.agent.dal.mysql.AgentMapper;
 import com.aworld.core.site.dal.dataobject.SiteDO;
 import com.aworld.core.site.dal.dataobject.SiteReferralEventDO;
@@ -7,6 +8,7 @@ import com.aworld.core.site.dal.dataobject.SiteResidencyDO;
 import com.aworld.core.site.dal.mysql.SiteMapper;
 import com.aworld.core.site.dal.mysql.SiteReferralEventMapper;
 import com.aworld.core.site.dal.mysql.SiteResidencyMapper;
+import com.aworld.core.stats.controller.agent.vo.AgentCountRespVO;
 import com.aworld.core.stats.dal.dataobject.RequestLogDO;
 import com.aworld.core.stats.dal.dataobject.StatsDailyDO;
 import com.aworld.core.stats.dal.mysql.RequestLogMapper;
@@ -292,6 +294,19 @@ public class StatsServiceImpl implements StatsService {
                             .build();
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public AgentCountRespVO getAgentCount() {
+        // 查询已激活的 Agent 总数
+        Long count = agentMapper.selectCount(
+            new LambdaQueryWrapper<AgentDO>()
+                .eq(AgentDO::getIsActive, true)
+        );
+        
+        return AgentCountRespVO.builder()
+            .totalAgents(count != null ? count : 0L)
+            .build();
     }
 
 }

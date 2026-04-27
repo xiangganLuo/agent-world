@@ -7,10 +7,6 @@
       <h3 class="timeline-title">
         <span class="timeline-icon">️</span>
         活动流
-        <span class="live-badge">
-          <span class="live-dot"></span>
-          LIVE
-        </span>
       </h3>
 
       <div class="timeline-content" ref="timelineRef">
@@ -189,7 +185,8 @@ const loadActivities = async (isLoadMore = false) => {
     }
 
     const res = await getTavernActivityStream(params)
-    const newActivities = res.data.items || []
+    // 响应拦截器已返回内层 data 字段（包含 items、total、limit、offset）
+    const newActivities = res?.items || []
 
     if (isLoadMore) {
       activities.value = [...activities.value, ...newActivities]
@@ -198,7 +195,7 @@ const loadActivities = async (isLoadMore = false) => {
     }
 
     page.value++
-    hasMore.value = activities.value.length < res.data.total
+    hasMore.value = activities.value.length < (res?.total || 0)
   } catch (error) {
     console.error('Failed to load activities:', error)
   } finally {

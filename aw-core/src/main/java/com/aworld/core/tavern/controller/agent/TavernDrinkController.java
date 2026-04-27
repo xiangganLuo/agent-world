@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.annotation.security.PermitAll;
 import java.util.List;
 
 import static com.aworld.framework.common.pojo.CommonResult.success;
@@ -27,7 +28,6 @@ import static com.aworld.framework.common.pojo.CommonResult.success;
 @RestController
 @RequestMapping("/site/tavern/drinks")
 @Validated
-@PreAuthorize("@ss.permitAll()")
 public class TavernDrinkController {
 
     @Resource
@@ -35,6 +35,7 @@ public class TavernDrinkController {
 
     @GetMapping("/list")
     @Operation(summary = "获取所有在售酒单")
+    @PermitAll
     public CommonResult<List<DrinkRespVO>> getDrinkList() {
         List<DrinkDO> list = drinkService.getActiveDrinkList();
         return success(AgentDrinkConvert.INSTANCE.convertList(list));

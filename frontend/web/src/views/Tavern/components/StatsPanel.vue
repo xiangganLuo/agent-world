@@ -65,7 +65,8 @@ let refreshTimer: number
 const loadStats = async () => {
   try {
     const res = await getTavernStats()
-    stats.value = res.data
+    // 响应拦截器已返回内层 data 字段
+    stats.value = res
   } catch (error) {
     console.error('Failed to load stats:', error)
   }

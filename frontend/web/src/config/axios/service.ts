@@ -14,7 +14,11 @@ const service: AxiosInstance = axios.create({
 // 请求拦截器
 service.interceptors.request.use(
   (config) => {
-    // C 端无需 Token
+    // C 端无需 Token，但需要设置租户 ID
+    const tenantId = import.meta.env.VITE_TENANT_ID
+    if (tenantId) {
+      config.headers['tenant-id'] = tenantId
+    }
     return config
   },
   (error) => {
@@ -23,26 +27,45 @@ service.interceptors.request.use(
   }
 )
 
-// 响应拦截器
+// response 拦截器
 service.interceptors.response.use(
-  (response: AxiosResponse) => {
-    const { data } = response
-    
-    // 二进制数据直接返回
-    if (response.request.responseType === 'blob' || response.request.responseType === 'arraybuffer') {
-      return response.data
+  async (response: AxiosResponse<any>) => {
+    let { data } = response
+    const config = response.config
+    if (!data) {
+      // 返回"[HTTP]请求没有返回值";
+      throw new Error()
     }
     
-    // 检查业务状态码
+    // 二进制数据则直接返回，例如说 Excel 导出
+    if (
+      response.request.responseType === 'blob' ||
+      response.request.responseType === 'arraybuffer'
+    ) {
+      // 注意：如果导出的响应为 json，说明可能失败了，不直接返回进行下载
+      if (response.data.type !== 'application/json') {
+        return response.data
+      }
+      data = await new Response(response.data).json()
+    }
+    
     const code = data.code || result_code
+    // 获取错误信息
     const msg = data.msg || '请求失败'
     
-    if (code !== 200 && code !== result_code) {
+    if (code === 500) {
       ElMessage.error(msg)
       return Promise.reject(new Error(msg))
+    } else if (code === 401) {
+      ElMessage.error(msg)
+      return Promise.reject(new Error(msg))
+    } else if (code !== result_code) {
+      ElMessage.error(msg)
+      return Promise.reject(new Error(msg))
+    } else {
+      // 成功时返回内层 data 字段（与 admin 项目保持一致）
+      return data.data
     }
-    
-    return data
   },
   (error) => {
     console.error('Response error:', error)

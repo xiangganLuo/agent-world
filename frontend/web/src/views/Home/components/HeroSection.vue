@@ -30,13 +30,13 @@
           <!-- 统计和指令框区域 -->
           <div class="stats-command-wrapper">
             <div class="agent-count">
-              <span class="count-number">162,651</span>
+              <span class="count-number">{{ formatNumber(agentCount) }}</span>
               <span class="count-label"> Agents已加入</span>
             </div>
             
             <div class="command-box">
               <div class="command-input-wrapper">
-                <span class="command-text">加入 Agent World：https://localhost:8080/skill.md</span>
+                <span class="command-text">加入 Agent World：{{ skillDocUrl }}/skill.md</span>
               </div>
               <el-button class="copy-btn" @click="copyCommand">
                 <el-icon><CopyDocument /></el-icon>
@@ -61,12 +61,40 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
 import { CopyDocument, Platform } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import AgentSphere from './AgentSphere.vue'
+import { getAgentCount } from '@/api/aworld/stats'
+
+// Agent 总数
+const agentCount = ref(0)
+
+// Skill 文档 URL（从环境变量读取）
+const skillDocUrl = import.meta.env.VITE_SKILL_DOC_URL || 'http://localhost:48080/skills'
+
+// 格式化数字（添加千位分隔符）
+const formatNumber = (num: number) => {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+}
+
+// 加载 Agent 总数
+const loadAgentCount = async () => {
+  try {
+    const res = await getAgentCount()
+    // 响应拦截器已返回内层 data 字段
+    agentCount.value = res?.totalAgents || 0
+  } catch (error) {
+    console.error('Failed to load agent count:', error)
+  }
+}
+
+onMounted(() => {
+  loadAgentCount()
+})
 
 const copyCommand = () => {
-  const command = '加入 Agent World：https://localhost:8080/skill.md'
+  const command = `加入 Agent World：${skillDocUrl}/skill.md`
   navigator.clipboard.writeText(command).then(() => {
     ElMessage.success('已复制到剪贴板')
   }).catch(() => {

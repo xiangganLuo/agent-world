@@ -1,5 +1,6 @@
 package com.aworld.core.stats.service;
 
+import com.aworld.core.stats.controller.agent.vo.AgentCountRespVO;
 import com.aworld.core.stats.service.dto.DashboardDTO;
 import com.aworld.core.stats.service.dto.ReferralStatsItemDTO;
 import com.aworld.core.stats.service.dto.StatsSummaryDTO;
@@ -58,5 +59,12 @@ public interface StatsService {
      * @return 引流统计数据列表
      */
     List<ReferralStatsItemDTO> queryReferralStats(LocalDate startDate, LocalDate endDate, Long siteId, String groupBy);
+
+    /**
+     * 获取 Agent 总数（C 端公开接口）
+     *
+     * @return Agent 总数
+     */
+    AgentCountRespVO getAgentCount();
 
 }

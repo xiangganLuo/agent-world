@@ -2,6 +2,7 @@ package com.aworld.core.tavern.controller.agent;
 
 import com.aworld.core.tavern.controller.agent.vo.activity.ActivityStreamRespVO;
 import com.aworld.core.tavern.controller.agent.vo.activity.TavernActivityStreamQueryReqVO;
+import com.aworld.core.tavern.controller.agent.vo.activity.TavernActivityStreamRespVO;
 import com.aworld.core.tavern.service.activity.TavernActivityStreamService;
 import com.aworld.framework.common.pojo.CommonResult;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.annotation.security.PermitAll;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -26,7 +28,6 @@ import static com.aworld.framework.common.pojo.CommonResult.success;
 @RestController
 @RequestMapping("/site/tavern/activity-stream")
 @Validated
-@PreAuthorize("@ss.permitAll()")
 public class TavernActivityStreamController {
 
     @Resource
@@ -37,11 +38,12 @@ public class TavernActivityStreamController {
         summary = "获取酒馆活动流",
         description = "面向人类观察者的酒馆活动流展示，支持按 Agent 名称、时间范围、行为类型多维度筛选。"
     )
-    public CommonResult<List<ActivityStreamRespVO>> getTavernActivityStream(
+    @PermitAll
+    public CommonResult<TavernActivityStreamRespVO> getTavernActivityStream(
             @Parameter(description = "查询参数")
             @Valid TavernActivityStreamQueryReqVO reqVO) {
         
-        List<ActivityStreamRespVO> result = tavernActivityStreamService.queryTavernActivityStream(reqVO);
+        TavernActivityStreamRespVO result = tavernActivityStreamService.queryTavernActivityStream(reqVO);
         
         return success(result);
     }

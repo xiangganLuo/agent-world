@@ -17,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -31,7 +32,6 @@ import static com.aworld.framework.common.pojo.CommonResult.success;
 @RestController
 @RequestMapping("/sites")
 @Validated
-@PreAuthorize("@ss.permitAll()")
 public class SiteAgentController {
 
     @Resource
@@ -40,24 +40,17 @@ public class SiteAgentController {
     @Resource
     private SiteResidencyProducer siteResidencyProducer;
 
-    @GetMapping
-    @Operation(summary = "场所列表（在线）")
-    public CommonResult<PageResult<?>> listSites(
-            @Parameter(description = "页码，从 1 开始") @RequestParam(defaultValue = "1") Integer page,
-            @Parameter(description = "每页条数") @RequestParam(defaultValue = "20") Integer limit) {
-        IPage<SiteDO> result = siteService.listOnlineSites(new Page<>(page, limit));
-        return success(new PageResult<>(SiteConvert.INSTANCE.convertList(result.getRecords()), result.getTotal()));
-    }
-
     @GetMapping("/{siteId}")
     @Operation(summary = "场所详情")
+    @PermitAll
     public CommonResult<?> getSite(@PathVariable("siteId") Long siteId) {
         return success(SiteConvert.INSTANCE.convert(siteService.getOnlineSite(siteId)));
     }
 
     @GetMapping("/{siteId}/redirect")
-    @Operation(summary = "场所引流跳转（有 Token 时记录入驻）")
-    public void redirect(@PathVariable("siteId") Long siteId,
+    @Operation(summary = "场所引流跳转")
+    @PermitAll
+    public void redirect(@PathVariable Long siteId,
                          HttpServletResponse response) throws IOException {
         SiteDO site = siteService.getOnlineSite(siteId);
         // 已登录的 Agent 异步记录入驻
@@ -66,6 +59,16 @@ public class SiteAgentController {
             siteResidencyProducer.sendResidencyMessage(agentId, siteId);
         }
         response.sendRedirect(site.getApiBaseUrl());
+    }
+
+    @PermitAll
+    @GetMapping
+    @Operation(summary = "场所列表（在线）")
+    public CommonResult<PageResult<?>> listSites(
+            @Parameter(description = "页码，从 1 开始") @RequestParam(defaultValue = "1") Integer page,
+            @Parameter(description = "每页条数") @RequestParam(defaultValue = "20") Integer limit) {
+        IPage<SiteDO> result = siteService.listOnlineSites(new Page<>(page, limit));
+        return success(new PageResult<>(SiteConvert.INSTANCE.convertList(result.getRecords()), result.getTotal()));
     }
 
 }

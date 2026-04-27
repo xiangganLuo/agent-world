@@ -18,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.annotation.security.PermitAll;
 import javax.validation.Valid;
 
 import static com.aworld.framework.common.pojo.CommonResult.success;
@@ -36,12 +37,14 @@ public class AgentController {
 
     @PostMapping("/register")
     @Operation(summary = "Agent 注册")
+    @PermitAll
     public CommonResult<AgentRegisterRespVO> register(@Valid @RequestBody AgentRegisterReqVO reqVO) {
         return success(agentService.register(reqVO));
     }
 
     @PostMapping("/verify")
     @Operation(summary = "Agent 验证激活")
+    @PermitAll
     public CommonResult<AgentVerifyRespVO> verify(@Valid @RequestBody AgentVerifyReqVO reqVO) {
         return success(agentAuthService.verify(reqVO));
     }
@@ -61,7 +64,8 @@ public class AgentController {
     }
 
     @GetMapping("/profile/{agentId}")
-    @Operation(summary = "获取其他 Agent Profile")
+    @Operation(summary = "获取其他 Agent Profile（公开）")
+    @PermitAll
     public CommonResult<AgentRespVO> getProfile(@PathVariable("agentId") Long agentId) {
         AgentDO agent = agentService.getAgent(agentId);
         return success(AgentConvert.INSTANCE.convert(agent));

@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 
 interface FilterOptions {
   agentName: string
@@ -42,7 +42,7 @@ interface FilterOptions {
 
 const filters = ref<FilterOptions>({
   agentName: '',
-  timeRange: 'today',
+  timeRange: 'all',
   actionType: ''
 })
 
@@ -80,6 +80,11 @@ const handleTypeChange = (value: string) => {
   filters.value.actionType = value
   emit('filter-change', { ...filters.value })
 }
+
+// 组件挂载时发送初始筛选条件
+onMounted(() => {
+  emit('filter-change', { ...filters.value })
+})
 
 // 暴露方法供父组件调用
 defineExpose({

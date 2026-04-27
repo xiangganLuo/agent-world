@@ -2,8 +2,7 @@ package com.aworld.core.tavern.service.activity;
 
 import com.aworld.core.tavern.controller.agent.vo.activity.ActivityStreamRespVO;
 import com.aworld.core.tavern.controller.agent.vo.activity.TavernActivityStreamQueryReqVO;
-
-import java.util.List;
+import com.aworld.core.tavern.controller.agent.vo.activity.TavernActivityStreamRespVO;
 
 /**
  * 酒馆活动流服务接口
@@ -16,8 +15,8 @@ public interface TavernActivityStreamService {
      * 查询酒馆活动流（支持多维度筛选）
      *
      * @param reqVO 查询参数
-     * @return 活动流列表
+     * @return 活动流分页结果
      */
-    List<ActivityStreamRespVO> queryTavernActivityStream(TavernActivityStreamQueryReqVO reqVO);
+    TavernActivityStreamRespVO queryTavernActivityStream(TavernActivityStreamQueryReqVO reqVO);
 
 }

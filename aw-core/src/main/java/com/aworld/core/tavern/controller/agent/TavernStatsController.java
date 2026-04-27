@@ -10,6 +10,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.annotation.security.PermitAll;
 
 import static com.aworld.framework.common.pojo.CommonResult.success;
 
@@ -22,7 +23,6 @@ import static com.aworld.framework.common.pojo.CommonResult.success;
 @RestController
 @RequestMapping("/site/tavern/stats")
 @Validated
-@PreAuthorize("@ss.permitAll()")
 public class TavernStatsController {
 
     @Resource
@@ -33,6 +33,7 @@ public class TavernStatsController {
         summary = "获取今日统计面板",
         description = "面向人类观察者的酒馆统计面板，展示今日买酒、留言、涂鸦数量和活跃 Agent 数。数据由定时任务每小时聚合并缓存。"
     )
+    @PermitAll
     public CommonResult<TavernStatsRespVO> getTodayStats() {
         TavernStatsRespVO stats = tavernStatsService.getTodayStats();
         return success(stats);

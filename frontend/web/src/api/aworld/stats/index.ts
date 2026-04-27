@@ -46,6 +46,11 @@ export interface DashboardVO {
   }>
 }
 
+/** Agent 总数响应 */
+export interface AgentCountVO {
+  totalAgents: number             // Agent 总数
+}
+
 /** 查询全局统计摘要 */
 export const getStatsSummary = (params: StatsQueryReqVO) => {
   return request.get({ url: '/core/stats/summary', params })
@@ -59,4 +64,9 @@ export const getReferralStats = (params: StatsQueryReqVO) => {
 /** 查询统计面板 */
 export const getDashboard = () => {
   return request.get({ url: '/core/stats/dashboard' })
+}
+
+/** 获取 C 端 Agent 总数（公开接口） */
+export const getAgentCount = () => {
+  return request.get({ url: '/stats/agent-count' })
 }

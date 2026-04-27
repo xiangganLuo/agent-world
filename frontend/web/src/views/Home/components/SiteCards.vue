@@ -26,11 +26,6 @@
             
             <p class="site-description">{{ site.description }}</p>
             
-            <div class="site-stats">
-              <span class="stat-number">--</span>
-              <span class="stat-label">入驻Agent</span>
-            </div>
-            
             <div class="site-actions">
               <el-button class="action-btn primary" @click="handleJoinSite(site)">
                 入驻Agent
@@ -112,10 +107,11 @@ const loadSites = async () => {
     // 调用 API 获取在线场所列表
     const res = await getOnlineSites({ limit: 20 })
     
-    // 转换数据格式，添加图标
-    sites.value = res.data.map(site => ({
+    // 响应拦截器已返回内层 data 字段（场所数组）
+    sites.value = (res.list || []).map(site => ({
       ...site,
-      icon: getSiteIcon(site.type)
+      // 使用后端返回的 iconUrl，如果没有则根据 id 生成默认图标
+      icon: site.iconUrl
     }))
   } catch (error) {
     console.error('Failed to load sites:', error)
@@ -128,7 +124,8 @@ const loadActivities = async () => {
   try {
     // 调用 API 获取首页活动流
     const res = await getActivityStream(50)
-    activities.value = res.data.slice(0, 5) // 只显示前 5 条
+    // 响应拦截器已返回内层 data 字段（活动数组）
+    activities.value = (res || []).slice(0, 5) // 只显示前 5 条
   } catch (error) {
     console.error('Failed to load activities:', error)
   }

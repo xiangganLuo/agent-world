@@ -220,55 +220,6 @@ export class BusinessFormManager {
  */
 export const initDefaultBusinessForms = () => {
   const manager = BusinessFormManager.getInstance()
-
-  // 注册招聘需求申请
-  manager.registerFormConfig({
-    path: '/bpm/hrm/recruitdemand/create',
-    processKey: 'hrm_recruit_demand',
-    name: '招聘需求申请',
-    supportRestart: true
-  })
-
-  // 注册招聘需求申请（数据库实际路径）
-  manager.registerFormConfig({
-    path: '/hrm/recruitdemand/create',
-    processKey: 'hrm_recruit_demand',
-    name: '招聘需求申请',
-    supportRestart: true
-  })
-
-  // 注册请假申请
-  manager.registerFormConfig({
-    path: '/bpm/oa/leave/create',
-    processKey: 'oa_leave',
-    name: '请假申请',
-    supportRestart: true
-  })
-
-  // 注册请假申请（数据库实际路径）
-  manager.registerFormConfig({
-    path: '/oa/leave/create',
-    processKey: 'oa_leave',
-    name: '请假申请',
-    supportRestart: true
-  })
-
-  // 注册员工入职审批
-  manager.registerFormConfig({
-    path: '/bpm/hrm/employeeonboard/create',
-    processKey: 'hrm_employee_onboard',
-    name: '员工入职审批',
-    supportRestart: true
-  })
-
-  // 注册员工入职审批（数据库实际路径）
-  manager.registerFormConfig({
-    path: '/hrm/employeeonboard/create',
-    processKey: 'hrm_employee_onboard',
-    name: '员工入职审批',
-    supportRestart: true
-  })
-
   console.log('[BPM] 已注册的配置列表:', manager.getAllFormConfigs().map(config => config.path))
 }
 

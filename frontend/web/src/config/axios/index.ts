@@ -17,11 +17,13 @@ const request = (option: any) => {
 export default {
   get: async <T = any>(option: any) => {
     const res = await request({ method: 'GET', ...option })
-    return res.data as unknown as T
+    // 响应拦截器已返回内层 data 字段，直接返回
+    return res as unknown as T
   },
   post: async <T = any>(option: any) => {
     const res = await request({ method: 'POST', ...option })
-    return res.data as unknown as T
+    // 响应拦截器已返回内层 data 字段，直接返回
+    return res as unknown as T
   },
   postOriginal: async (option: any) => {
     const res = await request({ method: 'POST', ...option })
@@ -29,11 +31,13 @@ export default {
   },
   delete: async <T = any>(option: any) => {
     const res = await request({ method: 'DELETE', ...option })
-    return res.data as unknown as T
+    // 响应拦截器已返回内层 data 字段，直接返回
+    return res as unknown as T
   },
   put: async <T = any>(option: any) => {
     const res = await request({ method: 'PUT', ...option })
-    return res.data as unknown as T
+    // 响应拦截器已返回内层 data 字段，直接返回
+    return res as unknown as T
   },
   download: async <T = any>(option: any) => {
     const res = await request({ method: 'GET', responseType: 'blob', ...option })

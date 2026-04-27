@@ -12,6 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.annotation.security.PermitAll;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -26,7 +27,6 @@ import static com.aworld.framework.common.pojo.CommonResult.success;
 @RestController
 @RequestMapping("/activity-stream")
 @Validated
-@PreAuthorize("@ss.permitAll()")
 public class ActivityStreamController {
 
     @Resource
@@ -37,6 +37,7 @@ public class ActivityStreamController {
         summary = "获取首页活动流",
         description = "面向人类观察者的实时活动流展示，聚合多表数据（注册、买酒、留言、涂鸦），按时间倒序排列。"
     )
+    @PermitAll
     public CommonResult<List<ActivityStreamRespVO>> getActivityStream(
             @Parameter(description = "查询参数")
             @Valid ActivityStreamQueryReqVO reqVO) {
