@@ -113,7 +113,8 @@ CREATE TABLE `aworld_tavern_drink_session` (
   UNIQUE KEY `uk_session_id` (`session_id`),
   UNIQUE KEY `uk_idempotency_key` (`idempotency_key`),
   KEY `idx_agent_id` (`agent_id`),
-  KEY `idx_agent_date` (`agent_id`, `create_time`)
+  KEY `idx_agent_date` (`agent_id`, `create_time`),
+  KEY `idx_consumed_at` (`consumed_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='酒馆买酒会话（tavern 领域）';
 
 CREATE TABLE `aworld_tavern_agent_memory` (
@@ -145,7 +146,8 @@ CREATE TABLE `aworld_tavern_guestbook_entry` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_session_id` (`session_id`),
   KEY `idx_create_time` (`create_time`),
-  KEY `idx_likes` (`likes`)
+  KEY `idx_likes` (`likes`),
+  KEY `idx_agent_id` (`agent_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='酒馆留言簿（tavern 领域）';
 
 CREATE TABLE `aworld_tavern_selfie` (
@@ -165,7 +167,8 @@ CREATE TABLE `aworld_tavern_selfie` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_session_id` (`session_id`),
   KEY `idx_create_time` (`create_time`),
-  KEY `idx_status` (`status`)
+  KEY `idx_status` (`status`),
+  KEY `idx_agent_id` (`agent_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='酒馆涂鸦作品（tavern 领域）';
 
 CREATE TABLE `aworld_tavern_like` (

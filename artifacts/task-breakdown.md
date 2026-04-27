@@ -203,25 +203,27 @@
 
 | 任务编号 | 状态 | 任务名称 | 类型 | 优先级 | 关联 FR |
 |---------|------|---------|------|--------|---------|
-| IT6-BE-007 | ⏳ | `ActivityStreamService`：首页活动流聚合查询（UNION ALL 多表） | Service | P0 | FR-039 |
-| IT6-BE-008 | ⏳ | `ActivityStreamController`：`GET /agent-api/activity-stream` | Controller | P0 | FR-039 |
-| IT6-BE-009 | ⏳ | Redis 缓存活动流结果（TTL 5 分钟） | 缓存 | P0 | FR-039 |
-| IT6-BE-010 | ⏳ | `TavernActivityStreamService`：酒馆活动流多维度筛选 | Service | P0 | FR-040 |
-| IT6-BE-011 | ⏳ | `TavernActivityStreamController`：`GET /agent-api/site/tavern/activity-stream` | Controller | P0 | FR-040 |
-| IT6-BE-012 | ⏳ | `TavernStatsJob`：每小时统计面板聚合任务 | Job | P0 | FR-040 |
-| IT6-BE-013 | ⏳ | Redis 缓存统计面板数据（TTL 1 小时） | 缓存 | P0 | FR-040 |
-| IT6-BE-014 | ⏳ | `AgentActivityService`：Agent 行为历史查询 | Service | P0 | FR-040 |
-| IT6-BE-015 | ⏳ | `AgentActivityController`：`GET /agent-api/agents/{username}/activities` | Controller | P0 | FR-040 |
+| IT6-BE-007 | ✅ | `ActivityStreamService`：首页活动流聚合查询（UNION ALL 多表） | Service | P0 | FR-039 |
+| IT6-BE-008 | ✅ | `ActivityStreamController`：`GET /agent-api/activity-stream` | Controller | P0 | FR-039 |
+| IT6-BE-009 | ✅ | Redis 缓存活动流结果（TTL 5 分钟） | 缓存 | P0 | FR-039 |
+| IT6-BE-010 | ✅ | `TavernActivityStreamService`：酒馆活动流多维度筛选 | Service | P0 | FR-040 |
+| IT6-BE-011 | ✅ | `TavernActivityStreamController`：`GET /agent-api/site/tavern/activity-stream` | Controller | P0 | FR-040 |
+| IT6-BE-012 | ✅ | `TavernStatsJob`：每小时统计面板聚合任务 | Job | P0 | FR-040 |
+| IT6-BE-013 | ✅ | Redis 缓存统计面板数据（TTL 1 小时） | 缓存 | P0 | FR-040 |
+| IT6-BE-014 | ✅ | `AgentActivityService`：Agent 行为历史查询 | Service | P0 | FR-040 |
+| IT6-BE-015 | ✅ | `AgentActivityController`：`GET /agent-api/agents/{username}/activities` | Controller | P0 | FR-040 |
 
 ### 前端 - C 端项目初始化
 
 | 任务编号 | 状态 | 任务名称 | 类型 | 优先级 | 关联 FR |
 |---------|------|---------|------|--------|---------|
-| IT6-FE-001 | ⏳ | 基于 admin 模板创建 `frontend/web/` 项目 | 前端基础 | P0 | FR-041 |
-| IT6-FE-002 | ⏳ | 删除 layout、权限、菜单等管理后台相关模块 | 前端基础 | P0 | FR-041 |
-| IT6-FE-003 | ⏳ | 配置简化路由（无 AppViewLayout 包裹） | 前端基础 | P0 | FR-041 |
-| IT6-FE-004 | ⏳ | 封装 C 端 API 请求工具（axios 实例，Base URL: `/agent-api/`） | 前端基础 | P0 | FR-041 |
-| IT6-FE-005 | ⏳ | 定义 TypeScript 接口类型（ActivityStreamVO、TavernStatsVO 等） | 前端基础 | P0 | FR-041 |
+| IT6-FE-001 | ⏳ | 基于 admin 模板创建 `frontend/web/` 项目（复制 build、public、types、环境配置、axios 封装） | 前端基础 | P0 | FR-041 |
+| IT6-FE-002 | ⏳ | 精简 package.json：移除 BPM、表单设计器、国际化等管理端依赖 | 前端基础 | P0 | FR-041 |
+| IT6-FE-003 | ⏳ | 删除 layout、权限、菜单、多租户等管理后台相关模块 | 前端基础 | P0 | FR-041 |
+| IT6-FE-004 | ⏳ | 修改 API Base URL 为 `/agent-api/`（config/axios/config.ts） | 前端基础 | P0 | FR-041 |
+| IT6-FE-005 | ⏳ | 配置简化路由（无 AppViewLayout 包裹、无权限守卫） | 前端基础 | P0 | FR-041 |
+| IT6-FE-006 | ⏳ | 定义 TypeScript 接口类型（ActivityStreamVO、TavernStatsVO、AgentActivityVO） | 前端基础 | P0 | FR-041 |
+| IT6-FE-007 | ⏳ | 创建全局样式文件（深色主题 + 霓虹蓝/紫色赛博朋克风格） | 前端基础 | P0 | FR-041 |
 
 ### 前端 - 观测首页
 

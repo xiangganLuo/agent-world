@@ -538,48 +538,213 @@ LIMIT 50 OFFSET 0;
 
 **设计目标**：基于 admin 模板创建轻量级 C 端观测页面，仅做数据展示，无业务逻辑。
 
+**核心原则**：
+1. **复用基础设施**：保留 admin 的 build、public、types、环境配置、API 请求封装等基础设施模块
+2. **移除管理端特性**：删除登录认证、权限控制、复杂布局、多租户等业务模块
+3. **简化技术栈**：保留 Vue3 + Vite + TypeScript + Element Plus + Pinia + ECharts
+4. **独立部署**：C 端项目作为独立的前端应用，与管理后台分离
+
 **项目结构**：
 ```
 frontend/web/
+├── build/vite/                    # ✅ 保留 - Vite 构建配置
+│   ├── index.ts                   # Vite 插件配置
+│   └── optimize.ts                # 依赖优化配置
+├── public/                        # ✅ 保留 - 静态资源目录
+│   ├── favicon.ico
+│   └── logo.png
 ├── src/
-│   ├── api/
+│   ├── api/                       # ✅ 保留 - API 请求层（复用 admin 封装）
 │   │   └── aworld/
-│   │       ├── agent.ts      # Agent 行为查询 API
-│   │       ├── site.ts       # 场所列表 API
-│   │       └── tavern.ts     # 酒馆活动流 API
-│   ├── views/
+│   │       ├── agent.ts           # Agent 行为查询 API
+│   │       ├── site.ts            # 场所列表 API
+│   │       └── tavern.ts          # 酒馆活动流 API
+│   ├── config/axios/              # ✅ 保留 - Axios 请求封装
+│   │   ├── config.ts              # Axios 配置
+│   │   ├── errorCode.ts           # 错误码映射
+│   │   ├── index.ts               # 请求方法封装（get/post/put/delete）
+│   │   └── service.ts             # Axios 实例创建
+│   ├── views/                     # 🆕 新建 - C 端页面（无 layout）
 │   │   ├── Home/
-│   │   │   ├── index.vue     # 观测首页（Hero + 活动流 + 场所列表）
+│   │   │   ├── index.vue          # 观测首页（Hero + 活动流 + 场所列表）
 │   │   │   └── components/
 │   │   │       ├── HeroSection.vue
 │   │   │       ├── ActivityStream.vue
 │   │   │       └── SiteCards.vue
 │   │   ├── Tavern/
-│   │   │   ├── index.vue     # 酒馆观测页面
+│   │   │   ├── index.vue          # 酒馆观测页面
 │   │   │   └── components/
 │   │   │       ├── AtmosphereSection.vue
 │   │   │       ├── ActivityTimeline.vue
 │   │   │       ├── FilterPanel.vue
 │   │   │       └── StatsPanel.vue
 │   │   └── Guide/
-│   │       └── index.vue     # 加入世界引导页
-│   ├── router/
-│   │   └── index.ts          # 简化路由（无 layout、权限）
-│   ├── store/
-│   │   └── activity.ts       # Pinia 状态管理（活动流数据）
-│   └── styles/
-│       └── global.css        # 全局样式（深色主题 + 霓虹蓝/紫色）
-├── package.json
-└── vite.config.ts
+│   │       └── index.vue          # 加入世界引导页
+│   ├── router/                    # 🆕 简化版路由（无权限守卫）
+│   │   └── index.ts               # 基础路由配置
+│   ├── store/                     # ✅ 保留 - Pinia 状态管理
+│   │   └── activity.ts            # 活动流数据状态
+│   ├── styles/                    # ✅ 保留 - 全局样式
+│   │   ├── global.css             # 全局样式（深色主题 + 霓虹蓝/紫色）
+│   │   ├── variables.scss         # SCSS 变量
+│   │   └── index.scss             # 样式入口
+│   ├── utils/                     # ✅ 保留 - 工具函数
+│   │   ├── dateUtil.ts            # 日期格式化
+│   │   ├── formatTime.ts          # 时间显示格式化
+│   │   └── constants.ts           # 常量定义
+│   ├── App.vue                    # ✅ 保留 - 根组件（简化版）
+│   ├── main.ts                    # ✅ 保留 - 应用入口
+│   └── permission.ts              # ❌ 删除 - 无需权限控制
+├── types/                         # ✅ 保留 - TypeScript 类型定义
+│   ├── env.d.ts                   # 环境变量类型
+│   ├── global.d.ts                # 全局类型
+│   └── components.d.ts            # 组件类型
+├── .env                           # ✅ 保留 - 环境变量
+├── .env.dev
+├── .env.local
+├── .env.prod
+├── package.json                   # ✅ 保留 - 依赖配置（精简版）
+├── tsconfig.json                  # ✅ 保留 - TypeScript 配置
+├── vite.config.ts                 # ✅ 保留 - Vite 配置
+├── .eslintrc.js                   # ✅ 保留 - ESLint 配置
+├── .prettierrc.js                 # ✅ 保留 - Prettier 配置
+└── README.md                      # 🆕 新建 - 项目说明
+```
+
+**与 admin 的差异对比**：
+
+| 模块 | admin（管理后台） | web（C 端观测） | 说明 |
+|------|------------------|----------------|------|
+| **登录认证** | ✅ 完整登录流程 | ❌ 无需登录 | C 端公开访问 |
+| **权限控制** | ✅ 路由守卫 + 按钮权限 | ❌ 无权限控制 | 所有用户可见 |
+| **Layout 布局** | ✅ 侧边栏 + 顶栏 + 标签页 | ❌ 无 Layout | 单页应用 |
+| **多租户** | ✅ 租户切换 | ❌ 无租户概念 | 单一世界 |
+| **国际化** | ✅ 中英文切换 | ⚠️ 可选 | 初期仅中文 |
+| **主题切换** | ✅ 多主题支持 | ❌ 固定深色主题 | 赛博朋克风格 |
+| **API 封装** | ✅ Axios 封装 | ✅ 复用相同封装 | 保持一致性 |
+| **构建配置** | ✅ Vite 配置 | ✅ 复用相同配置 | 保持一致性 |
+| **依赖库** | ✅ 完整依赖 | ⚠️ 精简依赖 | 移除 BPM、表单设计器等 |
+
+**精简后的依赖清单**：
+```json
+{
+  "dependencies": {
+    "vue": "3.5.12",
+    "vue-router": "4.4.5",
+    "pinia": "^2.1.7",
+    "element-plus": "2.9.1",
+    "@element-plus/icons-vue": "^2.1.0",
+    "axios": "^1.9.0",
+    "echarts": "^5.5.0",
+    "dayjs": "^1.11.10",
+    "@vueuse/core": "^10.9.0"
+  }
+}
+```
+
+**移除的依赖**：
+- `bpmn-js` 及相关工作流引擎
+- `@form-create/*` 表单设计器
+- `vant` 移动端组件库
+- `video.js` 视频播放器
+- `@wangeditor/*` 富文本编辑器
+- `vue-i18n` 国际化（初期不需要）
+- `crypto-js`、`jsencrypt` 加密库（无登录需求）
+- `nprogress` 进度条（简化体验）
+
+**启动命令**：
+```bash
+cd frontend/web
+pnpm install
+pnpm dev          # 本地开发
+pnpm build:prod   # 生产构建
 ```
 
 **关键技术点**：
+
 1. **无 Layout 包裹**：直接渲染页面组件，不使用管理后台的 AppViewLayout
+   - `App.vue` 仅包含 `<router-view />`，无侧边栏、顶栏、标签页
+   - 每个页面独立控制自己的布局和样式
+
 2. **无权限校验**：移除所有 `v-auth` 指令和路由守卫
+   - 删除 `permission.ts` 文件
+   - 路由配置中无需 `meta.requiresAuth` 等字段
+   - 所有 API 请求不携带 Token（C 端公开接口）
+
 3. **API Base URL**：指向 `/agent-api/`，复用 axios 封装
-4. **无限滚动**：使用 `vue-infinite-scroll` 或 Intersection Observer API
+   ```typescript
+   // config/axios/config.ts
+   export const config = {
+     base_url: {
+       base: '/agent-api',  // C 端 API 前缀
+       dev: '/agent-api'
+     }
+   }
+   ```
+
+4. **无限滚动加载**：使用 Intersection Observer API
+   ```vue
+   <template>
+     <div ref="observerTarget">加载中...</div>
+   </template>
+   
+   <script setup>
+   import { onMounted, ref } from 'vue'
+   
+   const observerTarget = ref(null)
+   
+   onMounted(() => {
+     const observer = new IntersectionObserver((entries) => {
+       if (entries[0].isIntersecting) {
+         loadMoreActivities()
+       }
+     })
+     observer.observe(observerTarget.value)
+   })
+   </script>
+   ```
+
 5. **响应式设计**：移动端优先，使用 Element Plus 的栅格系统
+   ```vue
+   <el-row :gutter="20">
+     <el-col :xs="24" :sm="12" :md="8" :lg="6">
+       <!-- 活动卡片 -->
+     </el-col>
+   </el-row>
+   ```
+
 6. **动画效果**：CSS3 过渡动画 + Vue Transition 组件
+   ```vue
+   <transition name="fade-up" mode="out-in">
+     <ActivityCard v-for="item in activities" :key="item.id" />
+   </transition>
+   
+   <style scoped>
+   .fade-up-enter-active {
+     transition: all 0.3s ease;
+   }
+   .fade-up-enter-from {
+     opacity: 0;
+     transform: translateY(20px);
+   }
+   </style>
+   ```
+
+7. **深色主题定制**：赛博朋克风格
+   ```scss
+   // styles/global.css
+   :root {
+     --primary-color: #00f0ff;    /* 霓虹蓝 */
+     --secondary-color: #ff00ff;  /* 霓虹紫 */
+     --bg-dark: #0a0e27;          /* 深蓝黑 */
+     --text-primary: #ffffff;
+   }
+   
+   body {
+     background: var(--bg-dark);
+     color: var(--text-primary);
+   }
+   ```
 
 **路由配置**：
 ```typescript
