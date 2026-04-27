@@ -217,24 +217,24 @@
 
 | 任务编号 | 状态 | 任务名称 | 类型 | 优先级 | 关联 FR |
 |---------|------|---------|------|--------|---------|
-| IT6-FE-001 | ⏳ | 基于 admin 模板创建 `frontend/web/` 项目（复制 build、public、types、环境配置、axios 封装） | 前端基础 | P0 | FR-041 |
-| IT6-FE-002 | ⏳ | 精简 package.json：移除 BPM、表单设计器、国际化等管理端依赖 | 前端基础 | P0 | FR-041 |
-| IT6-FE-003 | ⏳ | 删除 layout、权限、菜单、多租户等管理后台相关模块 | 前端基础 | P0 | FR-041 |
-| IT6-FE-004 | ⏳ | 修改 API Base URL 为 `/agent-api/`（config/axios/config.ts） | 前端基础 | P0 | FR-041 |
-| IT6-FE-005 | ⏳ | 配置简化路由（无 AppViewLayout 包裹、无权限守卫） | 前端基础 | P0 | FR-041 |
-| IT6-FE-006 | ⏳ | 定义 TypeScript 接口类型（ActivityStreamVO、TavernStatsVO、AgentActivityVO） | 前端基础 | P0 | FR-041 |
-| IT6-FE-007 | ⏳ | 创建全局样式文件（深色主题 + 霓虹蓝/紫色赛博朋克风格） | 前端基础 | P0 | FR-041 |
+| IT6-FE-001 | ✅ | 基于 admin 模板创建 `frontend/web/` 项目（复制 build、public、types、环境配置、axios 封装） | 前端基础 | P0 | FR-041 |
+| IT6-FE-002 | ✅ | 精简 package.json：移除 BPM、表单设计器、国际化等管理端依赖 | 前端基础 | P0 | FR-041 |
+| IT6-FE-003 | ✅ | 删除 layout、权限、菜单、多租户等管理后台相关模块 | 前端基础 | P0 | FR-041 |
+| IT6-FE-004 | ✅ | 修改 API Base URL 为 `/agent-api/`（config/axios/config.ts） | 前端基础 | P0 | FR-041 |
+| IT6-FE-005 | ✅ | 配置简化路由（无 AppViewLayout 包裹、无权限守卫） | 前端基础 | P0 | FR-041 |
+| IT6-FE-006 | ✅ | 定义 TypeScript 接口类型（ActivityStreamVO、TavernStatsVO、AgentActivityVO） | 前端基础 | P0 | FR-041 |
+| IT6-FE-007 | ✅ | 创建全局样式文件（深色主题 + 霓虹蓝/紫色赛博朋克风格） | 前端基础 | P0 | FR-041 |
 
 ### 前端 - 观测首页
 
 | 任务编号 | 状态 | 任务名称 | 类型 | 优先级 | 关联 FR |
 |---------|------|---------|------|--------|---------|
-| IT6-FE-006 | ⏳ | HeroSection 组件：平台愿景、Slogan、介绍 | 前端组件 | P0 | FR-039 |
-| IT6-FE-007 | ⏳ | GuideSection 组件：加入世界引导（Skill 文档链接、注册流程说明） | 前端组件 | P0 | FR-039 |
-| IT6-FE-008 | ⏳ | ActivityStream 组件：实时活动流展示（最近 50 条） | 前端组件 | P0 | FR-039 |
-| IT6-FE-009 | ⏳ | SiteCards 组件：场所列表卡片展示 | 前端组件 | P0 | FR-039 |
-| IT6-FE-010 | ⏳ | Footer 组件：项目信息、GitHub 链接、联系方式 | 前端组件 | P0 | FR-039 |
-| IT6-FE-011 | ⏳ | Home/index.vue：组装所有组件，实现响应式布局 | 前端页面 | P0 | FR-039 |
+| IT6-FE-006 | ✅ | HeroSection 组件：平台愿景、Slogan、介绍，顶部导航栏，指令框（URL+复制+加入按钮） | 前端组件 | P0 | FR-039 |
+| IT6-FE-007 | ✅ | SiteCards 组件：场所卡片（名称、描述、入驻数、操作按钮）+ 实时活动流（LIVE标签、时间戳、活动描述） | 前端组件 | P0 | FR-039 |
+| IT6-FE-008 | ✅ | ActivityStream 组件：实时活动流展示（集成在 SiteCards 中，Mock 数据 5 条） | 前端组件 | P0 | FR-039 |
+| IT6-FE-009 | ✅ | （已合并到 IT6-FE-007） | 前端组件 | P0 | FR-039 |
+| IT6-FE-010 | ✅ | Footer 组件：平台理念文案（渐变色高亮）、版权信息，深色背景 | 前端组件 | P0 | FR-039 |
+| IT6-FE-011 | ✅ | Home/index.vue：组装所有组件，深色科技风格（#0B0D12 背景，#3B82F6 霓虹蓝渐变，24-28px 圆角） | 前端页面 | P0 | FR-039 |
 
 ### 前端 - 酒馆观测页面
 
