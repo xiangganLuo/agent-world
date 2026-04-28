@@ -8,6 +8,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.annotation.Resource;
 
+import static com.aworld.core.enums.AWorldConstants.SITE_API_PREFIX;
+
 /**
  * 入驻拦截器配置
  *
@@ -27,7 +29,7 @@ public class ResidencyWebConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(residencyInterceptor())
-                .addPathPatterns(webProperties.getAgentApi().getPrefix() + " + SITE_API_PREFIX + " + "/**");
+                .addPathPatterns(webProperties.getAgentApi().getPrefix() + SITE_API_PREFIX + "/**");
     }
 
 }

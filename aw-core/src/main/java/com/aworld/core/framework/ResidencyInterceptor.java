@@ -4,6 +4,7 @@ import com.aworld.core.site.dal.dataobject.SiteDO;
 import com.aworld.core.site.dal.mysql.SiteMapper;
 import com.aworld.core.site.enums.SiteStateConstants;
 import com.aworld.core.site.mq.producer.SiteResidencyProducer;
+import com.aworld.framework.common.util.sql.SqlUtils;
 import com.aworld.framework.mybatis.core.query.LambdaQueryWrapperX;
 import com.aworld.framework.web.core.util.WebFrameworkUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -73,34 +74,23 @@ public class ResidencyInterceptor implements HandlerInterceptor {
             return null;
         }
 
-        // 先从缓存中查找
-        Long cachedSiteId = siteIdCache.get(siteIdentifier);
-        if (cachedSiteId != null) {
-            return cachedSiteId;
-        }
-
-        // 缓存未命中，查询数据库
-        synchronized (this) {
-            // 双重检查
-            cachedSiteId = siteIdCache.get(siteIdentifier);
-            if (cachedSiteId != null) {
-                return cachedSiteId;
-            }
-
-            // 模糊匹配 apiBaseUrl（例如: siteIdentifier="tavern" → LIKE '%tavern%'）
+        // 使用 computeIfAbsent 保证线程安全，避免 synchronized 性能瓶颈
+        return siteIdCache.computeIfAbsent(siteIdentifier, key -> {
+            // 转义 LIKE 特殊字符，防止 SQL 注入和语义混淆
+            String escapedIdentifier = SqlUtils.escapeLikeSpecialChars(key);
+            
             SiteDO site = siteMapper.selectOne(new LambdaQueryWrapperX<SiteDO>()
-                    .like(SiteDO::getApiBaseUrl, siteIdentifier)
+                    .like(SiteDO::getApiBaseUrl, escapedIdentifier)
                     .eq(SiteDO::getState, SiteStateConstants.ONLINE));
 
             if (site != null) {
-                siteIdCache.put(siteIdentifier, site.getId());
-                log.debug("[resolveSiteId] 站点标识={}, siteId={}", siteIdentifier, site.getId());
+                log.info("[resolveSiteId] 站点标识={}, siteId={}", key, site.getId());
                 return site.getId();
             }
 
-            log.warn("[resolveSiteId] 未找到匹配的站点, siteIdentifier={}, path={}", siteIdentifier, path);
+            log.warn("[resolveSiteId] 未找到匹配的站点, siteIdentifier={}, path={}", key, path);
             return null;
-        }
+        });
     }
 
     /**

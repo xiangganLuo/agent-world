@@ -110,6 +110,10 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             if (agent == null) {
                 return null;
             }
+            // 判断是否被激活
+            if (!Boolean.TRUE.equals(agent.getIsActive())) {
+                throw new AccessDeniedException("Agent 没有激活");
+            }
             return new LoginUser().setId(agent.getAgentId()).setUserType(UserTypeEnum.AGENT.getValue())
                     .setTenantId(agent.getTenantId());
         } catch (ServiceException serviceException) {

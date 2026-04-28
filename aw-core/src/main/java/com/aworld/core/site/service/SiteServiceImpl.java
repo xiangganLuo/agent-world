@@ -16,6 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
+import static com.aworld.core.enums.AWorldConstants.REVIEW_ACTION_APPROVE;
+import static com.aworld.core.enums.AWorldConstants.REVIEW_ACTION_REJECT;
+
 /**
  * 场所 Service 实现类
  *
@@ -96,12 +99,12 @@ public class SiteServiceImpl implements SiteService {
             throw ServiceExceptionUtil.exception(SiteErrorCodeConstants.SITE_STATE_NOT_PENDING);
         }
         String action = reqVO.getAction();
-        if (!"approve".equals(action) && !"reject".equals(action)) {
+        if (!REVIEW_ACTION_APPROVE.equals(action) && !REVIEW_ACTION_REJECT.equals(action)) {
             throw ServiceExceptionUtil.exception(SiteErrorCodeConstants.SITE_REVIEW_ACTION_INVALID);
         }
         SiteDO update = new SiteDO();
         update.setId(site.getId());
-        update.setState("approve".equals(action) ? SiteStateConstants.ONLINE : SiteStateConstants.REJECTED);
+        update.setState(REVIEW_ACTION_APPROVE.equals(action) ? SiteStateConstants.ONLINE : SiteStateConstants.REJECTED);
         update.setReviewReason(reqVO.getReason());
         siteMapper.updateById(update);
     }

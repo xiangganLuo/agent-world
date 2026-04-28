@@ -1,6 +1,5 @@
 package com.aworld.core.tavern.service.activity;
 
-import com.aworld.core.tavern.controller.agent.vo.activity.ActivityStreamRespVO;
 import com.aworld.core.tavern.controller.agent.vo.activity.TavernActivityStreamQueryReqVO;
 import com.aworld.core.tavern.controller.agent.vo.activity.TavernActivityStreamRespVO;
 

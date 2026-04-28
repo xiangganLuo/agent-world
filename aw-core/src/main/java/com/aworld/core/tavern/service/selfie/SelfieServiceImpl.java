@@ -7,7 +7,11 @@ import com.aworld.core.tavern.dal.mysql.DrinkSessionMapper;
 import com.aworld.core.tavern.dal.mysql.SelfieMapper;
 import com.aworld.core.tavern.enums.SelfieStatusEnum;
 import com.aworld.core.tavern.enums.SortOrderEnum;
+import com.aworld.core.tavern.enums.TavernErrorCodeConstants;
 import com.aworld.core.tavern.mq.message.ImageGenerateMessage;
+import com.aworld.framework.common.exception.util.ServiceExceptionUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -41,8 +45,11 @@ public class SelfieServiceImpl implements SelfieService {
     public SelfieDO createSelfie(Long agentId, String sessionId, String imagePrompt, String title) {
         // 1. 校验会话是否存在且属于当前 Agent
         DrinkSessionDO session = drinkSessionMapper.selectBySessionId(sessionId);
-        if (session == null || !session.getAgentId().equals(agentId)) {
-            throw new RuntimeException("会话不存在或无权操作");
+        if (session == null) {
+            throw ServiceExceptionUtil.exception(TavernErrorCodeConstants.SESSION_NOT_EXISTS);
+        }
+        if (!session.getAgentId().equals(agentId)) {
+            throw ServiceExceptionUtil.exception(TavernErrorCodeConstants.SESSION_UNAUTHORIZED);
         }
 
         // 2. 创建涂鸦记录（状态=generating）
@@ -72,7 +79,7 @@ public class SelfieServiceImpl implements SelfieService {
     public SelfieDO getSelfieDetail(Long selfieId) {
         SelfieDO selfie = selfieMapper.selectById(selfieId);
         if (selfie == null) {
-            throw new RuntimeException("涂鸦不存在");
+            throw ServiceExceptionUtil.exception(TavernErrorCodeConstants.SELFIE_NOT_EXISTS);
         }
         return selfie;
     }
@@ -87,9 +94,14 @@ public class SelfieServiceImpl implements SelfieService {
             offset = 0;
         }
 
+        // 计算页码（offset 从 0 开始，page 从 1 开始）
+        long page = offset / limit + 1;
+
+        // 构建分页对象
+        Page<SelfieDO> pageParam = new Page<>(page, limit);
+
         // 构建查询条件
-        com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<SelfieDO> queryWrapper = 
-                new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<>();
+        LambdaQueryWrapper<SelfieDO> queryWrapper = new LambdaQueryWrapper<>();
         
         // 排序：new（最新）或 top（最热）
         if (SortOrderEnum.TOP.getCode().equals(sort)) {
@@ -101,10 +113,8 @@ public class SelfieServiceImpl implements SelfieService {
             queryWrapper.orderByDesc(SelfieDO::getCreateTime);
         }
         
-        // 分页
-        queryWrapper.last("LIMIT " + limit + " OFFSET " + offset);
-        
-        return selfieMapper.selectList(queryWrapper);
+        // 执行分页查询
+        return selfieMapper.selectPage(pageParam, queryWrapper).getRecords();
     }
 
     @Override
@@ -113,12 +123,12 @@ public class SelfieServiceImpl implements SelfieService {
         // 查询涂鸦
         SelfieDO selfie = selfieMapper.selectById(selfieId);
         if (selfie == null) {
-            throw new RuntimeException("涂鸦不存在");
+            throw ServiceExceptionUtil.exception(TavernErrorCodeConstants.SELFIE_NOT_EXISTS);
         }
 
         // 校验是否为本人
         if (!selfie.getAgentId().equals(agentId)) {
-            throw new RuntimeException("无权删除他人的涂鸦");
+            throw ServiceExceptionUtil.exception(TavernErrorCodeConstants.SELFIE_UNAUTHORIZED);
         }
 
         // 删除

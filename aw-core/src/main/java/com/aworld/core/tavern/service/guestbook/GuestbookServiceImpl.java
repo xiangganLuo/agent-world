@@ -5,18 +5,20 @@ import com.aworld.core.tavern.dal.dataobject.DrinkSessionDO;
 import com.aworld.core.tavern.dal.dataobject.GuestbookEntryDO;
 import com.aworld.core.tavern.dal.mysql.DrinkSessionMapper;
 import com.aworld.core.tavern.dal.mysql.GuestbookMapper;
-import com.aworld.core.tavern.enums.RateLimitKeys;
+import com.aworld.core.tavern.dal.redis.TavernRateLimitRedisDAO;
 import com.aworld.core.tavern.enums.SortOrderEnum;
+import com.aworld.core.tavern.enums.TavernErrorCodeConstants;
 import com.aworld.framework.common.exception.ServiceException;
 import com.aworld.framework.common.exception.enums.GlobalErrorCodeConstants;
+import com.aworld.framework.common.exception.util.ServiceExceptionUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
-import java.time.Duration;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -37,12 +39,9 @@ public class GuestbookServiceImpl implements GuestbookService {
     private DrinkSessionMapper drinkSessionMapper;
 
     @Resource
-    private StringRedisTemplate stringRedisTemplate;
+    private TavernRateLimitRedisDAO rateLimitRedisDAO;
 
-    /**
-     * 留言频率限流 Key 前缀：每 60 秒最多 1 次
-     */
-    private static final String RATE_LIMIT_GUESTBOOK_60S = RateLimitKeys.GUESTBOOK;
+
 
     /**
      * 敏感词正则：API Key、邮箱、手机号
@@ -62,8 +61,11 @@ public class GuestbookServiceImpl implements GuestbookService {
 
         // 2. 校验会话是否存在且属于当前 Agent
         DrinkSessionDO session = drinkSessionMapper.selectBySessionId(sessionId);
-        if (session == null || !session.getAgentId().equals(agentId)) {
-            throw new RuntimeException("会话不存在或无权操作");
+        if (session == null) {
+            throw ServiceExceptionUtil.exception(TavernErrorCodeConstants.SESSION_NOT_EXISTS);
+        }
+        if (!session.getAgentId().equals(agentId)) {
+            throw ServiceExceptionUtil.exception(TavernErrorCodeConstants.SESSION_UNAUTHORIZED);
         }
 
         // 3. 创建留言
@@ -89,9 +91,14 @@ public class GuestbookServiceImpl implements GuestbookService {
             offset = 0;
         }
 
+        // 计算页码（offset 从 0 开始，page 从 1 开始）
+        long page = offset / limit + 1;
+
+        // 构建分页对象
+        Page<GuestbookEntryDO> pageParam = new Page<>(page, limit);
+
         // 构建查询条件
-        com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<GuestbookEntryDO> queryWrapper = 
-                new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<>();
+        LambdaQueryWrapper<GuestbookEntryDO> queryWrapper = new LambdaQueryWrapper<>();
         
         // 排序：new（最新）或 top（最热）
         if (SortOrderEnum.TOP.getCode().equals(sort)) {
@@ -103,10 +110,8 @@ public class GuestbookServiceImpl implements GuestbookService {
             queryWrapper.orderByDesc(GuestbookEntryDO::getCreateTime);
         }
         
-        // 分页
-        queryWrapper.last("LIMIT " + limit + " OFFSET " + offset);
-        
-        return guestbookMapper.selectList(queryWrapper);
+        // 执行分页查询
+        return guestbookMapper.selectPage(pageParam, queryWrapper).getRecords();
     }
 
     @Override
@@ -115,12 +120,12 @@ public class GuestbookServiceImpl implements GuestbookService {
         // 查询留言
         GuestbookEntryDO entry = guestbookMapper.selectById(entryId);
         if (entry == null) {
-            throw new RuntimeException("留言不存在");
+            throw ServiceExceptionUtil.exception(TavernErrorCodeConstants.GUESTBOOK_NOT_EXISTS);
         }
 
         // 校验是否为本人
         if (!entry.getAgentId().equals(agentId)) {
-            throw new RuntimeException("无权删除他人的留言");
+            throw ServiceExceptionUtil.exception(TavernErrorCodeConstants.GUESTBOOK_UNAUTHORIZED);
         }
 
         // 删除
@@ -133,11 +138,7 @@ public class GuestbookServiceImpl implements GuestbookService {
      * @param agentId Agent ID
      */
     private void checkGuestbookRateLimit(Long agentId) {
-        String rateLimitKey = String.format(RATE_LIMIT_GUESTBOOK_60S, agentId);
-        Boolean canPost = stringRedisTemplate.opsForValue()
-                .setIfAbsent(rateLimitKey, "1", Duration.ofSeconds(60));
-        
-        if (Boolean.FALSE.equals(canPost)) {
+        if (!rateLimitRedisDAO.checkGuestbookFrequencyLimit(agentId)) {
             throw new ServiceException(GlobalErrorCodeConstants.TOO_MANY_REQUESTS);
         }
     }
@@ -149,22 +150,22 @@ public class GuestbookServiceImpl implements GuestbookService {
      */
     private void validateContent(String content) {
         if (StrUtil.isBlank(content)) {
-            throw new RuntimeException("留言内容不能为空");
+            throw ServiceExceptionUtil.exception(TavernErrorCodeConstants.GUESTBOOK_CONTENT_EMPTY);
         }
 
         // 检查是否包含 API Key
         if (API_KEY_PATTERN.matcher(content).find()) {
-            throw new RuntimeException("留言内容不能包含 API Key");
+            throw ServiceExceptionUtil.exception(TavernErrorCodeConstants.GUESTBOOK_CONTAINS_API_KEY);
         }
 
         // 检查是否包含邮箱
         if (EMAIL_PATTERN.matcher(content).find()) {
-            throw new RuntimeException("留言内容不能包含邮箱地址");
+            throw ServiceExceptionUtil.exception(TavernErrorCodeConstants.GUESTBOOK_CONTAINS_EMAIL);
         }
 
         // 检查是否包含手机号
         if (MOBILE_PATTERN.matcher(content).find()) {
-            throw new RuntimeException("留言内容不能包含手机号码");
+            throw ServiceExceptionUtil.exception(TavernErrorCodeConstants.GUESTBOOK_CONTAINS_MOBILE);
         }
     }
 

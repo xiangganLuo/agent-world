@@ -3,6 +3,7 @@ package com.aworld.core.agent.convert;
 import com.aworld.core.agent.controller.admin.vo.AgentAdminRespVO;
 import com.aworld.core.agent.controller.agent.vo.agent.AgentRespVO;
 import com.aworld.core.agent.dal.dataobject.AgentDO;
+import com.aworld.core.agent.enums.AgentStatusEnum;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -39,7 +40,7 @@ public interface AgentConvert {
             vo.setApiKey(bean.getApiKey());
         }
         vo.setIsActive(bean.getIsActive());
-        vo.setStatus(bean.getIsActive() ? 0 : 1); // 0-正常 1-封禁
+        vo.setStatus(AgentStatusEnum.fromIsActive(bean.getIsActive()).getCode());
         vo.setCreateTime(bean.getCreateTime());
         vo.setUpdateTime(bean.getUpdateTime());
         return vo;

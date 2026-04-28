@@ -97,7 +97,9 @@ public class RequestLogFilter extends OncePerRequestFilter {
             // 异步写入数据库
             requestLogService.recordLogAsync(logDO);
         } catch (Exception e) {
-            log.error("[RequestLogFilter] 记录请求日志失败", e);
+            log.error("[RequestLogFilter] 记录请求日志失败, path={}, method={}, agentId={}", 
+                      request.getRequestURI(), request.getMethod(), 
+                      WebFrameworkUtils.getLoginUserId(), e);
         }
     }
 

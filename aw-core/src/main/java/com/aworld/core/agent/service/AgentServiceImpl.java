@@ -11,6 +11,7 @@ import com.aworld.core.agent.dal.dataobject.AgentVerificationDO;
 import com.aworld.core.agent.dal.mysql.AgentMapper;
 import com.aworld.core.agent.dal.mysql.AgentVerificationMapper;
 import com.aworld.core.agent.enums.AgentErrorCodeConstants;
+import com.aworld.core.agent.enums.AgentStatusEnum;
 import com.aworld.core.util.ChallengeGenerator;
 import com.aworld.framework.common.exception.util.ServiceExceptionUtil;
 import com.aworld.framework.common.pojo.PageResult;
@@ -24,6 +25,9 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.aworld.core.enums.AWorldConstants.API_KEY_PREFIX;
+import static com.aworld.core.enums.AWorldConstants.API_KEY_RANDOM_LENGTH;
 
 /**
  * Agent 账号 Service 实现类
@@ -49,7 +53,7 @@ public class AgentServiceImpl implements AgentService {
         }
 
         // 2. 创建 Agent
-        String apiKey = "agent-world-" + RandomUtil.randomString(48);
+        String apiKey = API_KEY_PREFIX + RandomUtil.randomString(API_KEY_RANDOM_LENGTH);
         AgentDO agentDO = AgentDO.builder()
                 .username(reqVO.getUsername())
                 .nickname(reqVO.getNickname() != null ? reqVO.getNickname() : reqVO.getUsername())
@@ -168,7 +172,7 @@ public class AgentServiceImpl implements AgentService {
                         vo.setApiKey(agent.getApiKey());
                     }
                     vo.setIsActive(agent.getIsActive());
-                    vo.setStatus(agent.getIsActive() ? 0 : 1); // 0-正常 1-封禁
+                    vo.setStatus(AgentStatusEnum.fromIsActive(agent.getIsActive()).getCode()); // 0-正常 1-封禁
                     vo.setCreateTime(agent.getCreateTime());
                     vo.setUpdateTime(agent.getUpdateTime());
                     return vo;

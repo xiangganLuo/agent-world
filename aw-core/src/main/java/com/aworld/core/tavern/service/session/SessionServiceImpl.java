@@ -7,24 +7,23 @@ import com.aworld.core.agent.service.AgentService;
 import com.aworld.core.tavern.dal.dataobject.DrinkDO;
 import com.aworld.core.tavern.dal.dataobject.DrinkSessionDO;
 import com.aworld.core.tavern.dal.mysql.DrinkSessionMapper;
-import com.aworld.core.tavern.enums.RateLimitKeys;
+import com.aworld.core.tavern.dal.redis.TavernRateLimitRedisDAO;
 import com.aworld.core.tavern.enums.SessionStatusEnum;
+import com.aworld.core.tavern.enums.TavernErrorCodeConstants;
 import com.aworld.core.tavern.mq.message.MemoryWriteMessage;
 import com.aworld.core.tavern.service.drink.DrinkService;
 import com.aworld.core.tavern.service.session.dto.DrinkPurchaseRespDTO;
 import com.aworld.framework.common.exception.ServiceException;
 import com.aworld.framework.common.exception.enums.GlobalErrorCodeConstants;
+import com.aworld.framework.common.exception.util.ServiceExceptionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.concurrent.TimeUnit;
 
 import static com.aworld.core.tavern.enums.SessionStatusEnum.PURCHASED;
 
@@ -45,7 +44,7 @@ public class SessionServiceImpl implements SessionService {
     private DrinkService drinkService;
 
     @Resource
-    private StringRedisTemplate stringRedisTemplate;
+    private TavernRateLimitRedisDAO rateLimitRedisDAO;
 
     @Resource
     private ApplicationEventPublisher eventPublisher;
@@ -56,15 +55,7 @@ public class SessionServiceImpl implements SessionService {
     @Resource
     private AgentService agentService;
 
-    /**
-     * 买酒频率限流 Key 前缀：每 3 秒最多 1 次
-     */
-    private static final String RATE_LIMIT_DRINK_3S = RateLimitKeys.DRINK;
-    
-    /**
-     * 买酒每日总量限流 Key 前缀：每天最多 20 杯
-     */
-    private static final String RATE_LIMIT_DRINK_DAILY = RateLimitKeys.DRINK_DAILY;
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -78,12 +69,12 @@ public class SessionServiceImpl implements SessionService {
             drink = drinkService.getActiveDrinkList().stream()
                     .filter(d -> d.getDrinkCode().equals(drinkCode))
                     .findFirst()
-                    .orElseThrow(() -> new RuntimeException("酒款不存在或已下架"));
+                    .orElseThrow(() -> ServiceExceptionUtil.exception(TavernErrorCodeConstants.DRINK_NOT_FOUND));
         } else {
             drink = drinkService.randomDrink();
         }
         if (drink == null) {
-            throw new RuntimeException("目前没有在售的酒");
+            throw ServiceExceptionUtil.exception(TavernErrorCodeConstants.DRINK_NOT_AVAILABLE);
         }
 
         // 2. 创建会话
@@ -109,11 +100,14 @@ public class SessionServiceImpl implements SessionService {
     public void consume(Long agentId, String sessionId) {
         // 1. 校验会话
         DrinkSessionDO session = drinkSessionMapper.selectBySessionId(sessionId);
-        if (session == null || !session.getAgentId().equals(agentId)) {
-            throw new RuntimeException("会话不存在");
+        if (session == null) {
+            throw ServiceExceptionUtil.exception(TavernErrorCodeConstants.SESSION_NOT_EXISTS);
+        }
+        if (!session.getAgentId().equals(agentId)) {
+            throw ServiceExceptionUtil.exception(TavernErrorCodeConstants.SESSION_UNAUTHORIZED);
         }
         if (SessionStatusEnum.CONSUMED.getCode().equals(session.getStatus())) {
-            throw new RuntimeException("该酒已被消费");
+            throw ServiceExceptionUtil.exception(TavernErrorCodeConstants.SESSION_ALREADY_CONSUMED);
         }
 
         // 2. 更新状态
@@ -121,7 +115,7 @@ public class SessionServiceImpl implements SessionService {
         session.setConsumedAt(LocalDateTime.now());
         drinkSessionMapper.updateById(session);
 
-        // 3. 异步发送写记忆消息
+        // 3. 发布事件（事务提交后异步处理）
         log.info("[consume][Agent {} 消费了酒 {}，准备异步写记忆]", agentId, session.getDrinkId());
         
         // 计算 relaxScore 和 moodTags
@@ -149,9 +143,9 @@ public class SessionServiceImpl implements SessionService {
         MemoryWriteMessage message = new MemoryWriteMessage();
         message.setAgentId(agentId);
         message.setSessionId(sessionId);
-        message.setRelaxScore(experience.getRelaxScore());
-        message.setMoodTags(experience.getMoodTags());
-        message.setSuggestedMemory(experience.getSuggestedMemory());
+        message.setRelaxScore(experience != null ? experience.getRelaxScore() : 0);
+        message.setMoodTags(experience != null ? experience.getMoodTags() : null);
+        message.setSuggestedMemory(experience != null ? experience.getSuggestedMemory() : null);
         eventPublisher.publishEvent(message);
     }
 
@@ -164,29 +158,12 @@ public class SessionServiceImpl implements SessionService {
      */
     private void checkDrinkRateLimit(Long agentId) {
         // 1. 频率限流：每 3 秒最多 1 次
-        String rateLimit3sKey = String.format(RATE_LIMIT_DRINK_3S, agentId);
-        Boolean canBuy3s = stringRedisTemplate.opsForValue()
-                .setIfAbsent(rateLimit3sKey, "1", Duration.ofSeconds(3));
-        if (Boolean.FALSE.equals(canBuy3s)) {
+        if (!rateLimitRedisDAO.checkDrinkFrequencyLimit(agentId)) {
             throw new ServiceException(GlobalErrorCodeConstants.TOO_MANY_REQUESTS);
         }
 
         // 2. 总量限流：每天最多 20 杯
-        String dailyKey = String.format(RATE_LIMIT_DRINK_DAILY, agentId);
-        Long currentCount = stringRedisTemplate.opsForValue().increment(dailyKey);
-        
-        // 如果是第一次购买，设置过期时间为当天结束
-        if (currentCount != null && currentCount == 1) {
-            LocalDateTime now = LocalDateTime.now();
-            LocalDateTime midnight = now.toLocalDate().plusDays(1).atStartOfDay();
-            long secondsUntilMidnight = java.time.Duration.between(now, midnight).getSeconds();
-            stringRedisTemplate.expire(dailyKey, secondsUntilMidnight, TimeUnit.SECONDS);
-        }
-        
-        // 检查是否超过每日限额
-        if (currentCount != null && currentCount > 20) {
-            // 回滚计数（因为已经 increment 了）
-            stringRedisTemplate.opsForValue().decrement(dailyKey);
+        if (!rateLimitRedisDAO.checkDrinkDailyLimit(agentId)) {
             throw new ServiceException(GlobalErrorCodeConstants.TOO_MANY_REQUESTS);
         }
     }

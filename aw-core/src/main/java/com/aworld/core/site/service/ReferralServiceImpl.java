@@ -4,13 +4,12 @@ import cn.hutool.core.util.StrUtil;
 import com.aworld.core.site.dal.dataobject.SiteDO;
 import com.aworld.core.site.dal.dataobject.SiteReferralEventDO;
 import com.aworld.core.site.dal.mysql.SiteReferralEventMapper;
+import com.aworld.core.site.dal.redis.ReferralRedisDAO;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 场所引流服务实现
@@ -21,22 +20,11 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class ReferralServiceImpl implements ReferralService {
 
-    /**
-     * 引流去重 Redis Key 前缀
-     * 格式：referral:dedup:{agentId}:{siteId}
-     */
-    private static final String REFERRAL_DEDUP_KEY = "referral:dedup:%d:%d";
-
-    /**
-     * 去重 TTL：5 分钟
-     */
-    private static final long DEDUP_TTL_SECONDS = 5 * 60;
-
     @Resource
     private SiteReferralEventMapper referralEventMapper;
 
     @Resource
-    private StringRedisTemplate stringRedisTemplate;
+    private ReferralRedisDAO referralRedisDAO;
 
     @Resource
     private SiteService siteService;
@@ -45,16 +33,13 @@ public class ReferralServiceImpl implements ReferralService {
     public String recordReferral(Long agentId, Long siteId, String targetUrl) {
         // 1. Redis 去重检查（只对已登录 Agent）
         if (agentId != null) {
-            String dedupKey = String.format(REFERRAL_DEDUP_KEY, agentId, siteId);
-            Boolean exists = stringRedisTemplate.hasKey(dedupKey);
-            if (Boolean.TRUE.equals(exists)) {
+            if (referralRedisDAO.isReferralExists(agentId, siteId)) {
                 log.debug("[recordReferral] 引流事件已存在，跳过记录. agentId={}, siteId={}", agentId, siteId);
-                // 即使去重，也需要返回正确的跳转 URL
                 return getTargetUrl(siteId, targetUrl);
             }
 
             // 设置去重标记
-            stringRedisTemplate.opsForValue().set(dedupKey, "1", DEDUP_TTL_SECONDS, TimeUnit.SECONDS);
+            referralRedisDAO.markReferralRecorded(agentId, siteId);
         }
 
         // 2. 写入引流事件表

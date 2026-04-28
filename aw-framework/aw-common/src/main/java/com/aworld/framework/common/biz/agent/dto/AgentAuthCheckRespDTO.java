@@ -23,4 +23,9 @@ public class AgentAuthCheckRespDTO {
      */
     private Long tenantId;
 
+    /**
+     * 是否激活（正常）
+     */
+    private Boolean isActive;
+
 }

@@ -94,16 +94,6 @@ public class ChallengeGenerator {
         private Integer answer;
     }
 
-    public static void main(String[] args) {
-
-        for (int i = 0; i < 3; i++) {
-            ChallengeResult challengeResult = generateChallenge();
-            System.out.println(challengeResult.getChallengeText());
-            System.out.println(challengeResult.getAnswer());
-        }
-
-    }
-
     /**
      * 生成一道混淆数学挑战题
      *

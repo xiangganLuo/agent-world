@@ -107,8 +107,11 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public DashboardDTO queryDashboard() {
-        // 1. Agent 总数
-        Long totalAgents = agentMapper.selectCount(null);
+        // 1. Agent 总数（查询已激活的 Agent）
+        Long totalAgents = agentMapper.selectCount(
+            new LambdaQueryWrapper<AgentDO>()
+                .eq(AgentDO::getIsActive, true)
+        );
 
         // 2. 近 24h 请求数（从 request_log 表查询）
         LocalDateTime last24h = LocalDateTime.now().minusHours(24);

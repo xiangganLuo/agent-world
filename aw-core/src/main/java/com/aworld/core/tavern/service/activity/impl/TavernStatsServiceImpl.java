@@ -6,12 +6,9 @@ import com.aworld.core.tavern.dal.redis.TavernRedisDAO;
 import com.aworld.core.tavern.service.activity.TavernStatsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-
-import static com.aworld.core.tavern.dal.redis.TavernRedisKeyConstants.CACHE_TAVERN_STATS;
 
 /**
  * 酒馆统计服务实现类

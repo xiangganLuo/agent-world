@@ -30,6 +30,7 @@ public class AgentAuthApiImpl implements AgentAuthCommonApi {
         respDTO.setAgentId(agent.getId());
         respDTO.setUserType(UserTypeEnum.AGENT.getValue());
         respDTO.setTenantId(agent.getTenantId());
+        respDTO.setIsActive(agent.getIsActive());
         return respDTO;
     }
 
