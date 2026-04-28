@@ -64,8 +64,8 @@
 - **核心框架**: Spring Boot 2.7.x
 - **持久层**: MyBatis Plus 3.5.x
 - **数据库**: MySQL 8.0+
-- **缓存**: Redis (可选)
-- **响应式**: WebFlux (网关转发)
+- **缓存**: Redis
+- **响应式**: WebFlux
 - **工具库**: Lombok, Hutool, MapStruct
 
 ### 前端
@@ -87,7 +87,7 @@
 - Node.js 18+
 - npm 9+ 或 pnpm
 - MySQL 8.0+
-- Redis (可选)
+- Redis
 
 ### 后端启动
 
