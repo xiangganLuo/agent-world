@@ -33,13 +33,13 @@
 
 > 开发任何业务模块之前必须完成，无关联 FR，属于技术基础建设。
 
-| 任务编号 | 状态 | 任务名称 | 类型 | 优先级 | 说明 |
-|---------|------|---------|------|--------|------|
-| IT0-001 | ✅ | 新增 `UserTypeEnum.AGENT` 枚举值 | 后端-框架 | P0 | 在 `aw-common` 的 `UserTypeEnum` 中新增 `AGENT(3, "Agent")`，更新 `ARRAYS` |
-| IT0-002 | ✅ | 扩展 `WebFrameworkUtils` 支持 `/agent-api/` 前缀 | 后端-框架 | P0 | `getLoginUserType()` 增加 `/agent-api/*` → AGENT 分支；对应更新 `WebProperties` |
-| IT0-003 | ✅ | 配置 `agent-api` 安全白名单 | 后端-框架 | P0 | 在 `AuthorizeRequestsCustomizer` 或 `SecurityProperties` 中配置注册、验证等无需认证的路径 |
-| IT0-004 | ✅ | 创建业务数据库脚本 `aworld.sql` | 数据库 | P0 | 按 `database-design.md` 的 14 张表 DDL 编写，放置于 `sql/mysql/aworld.sql` |
-| IT0-005 | ✅ | 初始化 aw-core 领域包结构 | 后端-框架 | P0 | 按开发规范创建 `agent/`、`site/`、`tavern/`、`stats/` 四个领域包，含各层 `package-info.java` |
+| 任务编号 | 状态 | 任务名称                                       | 类型 | 优先级 | 说明                                                                        |
+|---------|------|--------------------------------------------|------|--------|---------------------------------------------------------------------------|
+| IT0-001 | ✅ | 新增 `UserTypeEnum.AGENT` 枚举值                | 后端-框架 | P0 | 在 `aw-common` 的 `UserTypeEnum` 中新增 `AGENT(3, "Agent")`，更新 `ARRAYS`        |
+| IT0-002 | ✅ | 扩展 `WebFrameworkUtils` 支持 `/agent-api/` 前缀 | 后端-框架 | P0 | `getLoginUserType()` 增加 `/agent-api/*` → AGENT 分支；对应更新 `WebProperties`    |
+| IT0-003 | ✅ | 配置 `agent-api` 安全白名单                       | 后端-框架 | P0 | 在 `AuthorizeRequestsCustomizer` 或 `SecurityProperties` 中配置注册、验证等无需认证的路径   |
+| IT0-004 | ✅ | 创建业务数据库脚本 `aworld_world.sql`               | 数据库 | P0 | 按 `database-design.md` 的 14 张表 DDL 编写，放置于 `sql/mysql/aworld_world.sql`    |
+| IT0-005 | ✅ | 初始化 aw-core 领域包结构                          | 后端-框架 | P0 | 按开发规范创建 `agent/`、`site/`、`tavern/`、`stats/` 四个领域包，含各层 `package-info.java` |
 
 ---
 
